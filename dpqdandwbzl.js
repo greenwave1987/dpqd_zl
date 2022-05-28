@@ -3,7 +3,8 @@
  * 默认最多跑五个号，默认全部号给我助力发财挖宝，最少一个，可以修改assists值，为空默认全给我助力。
  */
 const $ = new Env('店铺签到(含挖宝助力）');
-let assists = '' //帮我助力的数量，为空默认全部帮我助力。
+let assists = ''
+if (process.env.HELPTIMES){assists = process.env.HELPTIMES} //帮我助力的数量，为空默认全部帮我助力。
 const axios = require('axios')
 const {SHA256} = require('crypto-js')
 const CryptoJS = require('crypto-js')
