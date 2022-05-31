@@ -95,10 +95,10 @@ function signCollectGift(token,shopname,activity) {
           //console.log(data)
           data = JSON.parse(/{(.*)}/g.exec(data)[0])
           if (data.success) {
-                console.log( `${shopname} √`);
+                console.log( new Date().Format("hh:mm:ss.S")+`${shopname} √`);
                 message += `√店铺（` + shopname + `）\n`
             } else {
-                console.log(`${shopname} ×`, data.msg);
+                console.log(new Date().Format("hh:mm:ss.S")+`${shopname} ×`, data.msg);
                 message += `×店铺（` + shopname + `）\n`
             }
         }
@@ -129,7 +129,7 @@ async function wbzl(){
                 res = await api('happyDigHelp', {
                     "linkId": "pTTvJeSTrpthgk9ASBVGsw","inviter": code.inviter,"inviteCode": code.inviteCode})
                 if (res.code === 0) {
-                    console.log('助力成功')
+                    console.log(new Date().Format("hh:mm:ss.S")+'-助力成功')
                     await $.wait(2000)
                     break
                 } else if (res.code === 16144) {
@@ -284,6 +284,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
             1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
 }
+
 //定义通知函数
 async function showMsg() {
   if ($.isNode()) {
