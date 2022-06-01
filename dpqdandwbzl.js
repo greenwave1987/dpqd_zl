@@ -33,6 +33,7 @@ let token = []
     cookiesArr = await requireConfig()
     // 获取签到token
     token =await readapi('50036','ae77e6c5dffb4b269117f613100f2196')
+    token.sort(function () { return Math.random() - 0.5})
     //console.log(token)
 
     //店铺签到
@@ -128,6 +129,7 @@ function signCollectGift(token,shopname,activity) {
 // 发财挖宝助力
 async function wbzl(){
     shareCodes = await readapi('50035','5fbed831fb4043d6968ae10ec38ee991')
+    
     //console.log(shareCodes)
     for (let [index, value] of cookiesArr.entries()) {
         try {
@@ -138,6 +140,8 @@ async function wbzl(){
             if (shareCodes.length === 0) {'获取助力码失败';break}
             if (assists==0) {assists=cookiesArr.length}else{assists=Math.min(1,assists)}
             console.log('将帮提供token者助力',assists+'次！！！') 
+            shareCodes.sort(function () { return Math.random() - 0.5})
+            shareCodes=shareCodes[0]
             for (let code of shareCodes) {
                 console.log('将帮提供token者助力',code.inviter) 
                 res = await api('happyDigHelp', {
