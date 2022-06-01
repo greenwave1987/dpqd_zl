@@ -81,7 +81,7 @@ async function dpqd(){
         if (token[j].dday==0) {console.log('今日有奖励店铺已完成，其他店铺其他时段再签！！！');break}
     }
     await signCollectGift(token[j].token,token[j].shopName,token[j].activity)
-    await $.wait(500)
+    await $.wait(200)
   }
 }
 
