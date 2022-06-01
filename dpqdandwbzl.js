@@ -3,8 +3,12 @@
  * 默认最多跑五个号，默认全部号给我助力发财挖宝，最少一个，可以修改assists值，为空默认全给我助力。
  */
 const $ = new Env('店铺签到(含挖宝助力）');
-let assists = ''
-if (process.env.HELPTIMES){assists = process.env.HELPTIMES} //帮我助力的数量，为空默认全部帮我助力。
+let assists = 0
+if (process.env.HELPTIMES){assists = process.env.HELPTIMES} //帮我助力的数量，环境变量为空默认全部帮我助力。
+let maxnums = 5
+if (process.env.MAXNUMS){assists = process.env.MAXNUMS} //最多签到账号数量，环境变量为空默认只签前5个。
+let notify_dpqd = "false"
+if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 const axios = require('axios')
 const {SHA256} = require('crypto-js')
 const CryptoJS = require('crypto-js')
@@ -38,7 +42,7 @@ let token = []
             cookie = value
             console.log(`\n开始【京东账号${index + 1}】\n`)
             message +=`\n【第${index + 1}京东账号签到结果】\n`
-            if(index >5){'都签5个号了，退出吧，留给别人点，小心黑IP！！！！';break}
+            if(index >maxnums-1){`都签${maxnums}个号了，退出吧，留给别人点，小心黑IP！！！！`;break}
             await dpqd()
         } catch (e) {
             console.log('error', e)
@@ -50,8 +54,15 @@ let token = []
         await $.wait((60-nowSeconds)*1000)
         await wbzl()
         } else{await wbzl()} 
-    //执行通知  
-    await showMsg()           
+    //执行通知
+    if(nowHours<8){
+        if(notify_dpqd){
+            await showMsg()
+            }
+    }else{
+        await showMsg()
+        }  
+               
 })()
     .catch((e) => {
       $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
@@ -122,7 +133,7 @@ async function wbzl(){
             await requestAlgo('ce6c2', 'jdltapp;')
 
             if (shareCodes.length === 0) {'获取助力码失败';break}
-            if (!assists) {assists=cookiesArr.length}else{assists=Math.min(1,assists)}
+            if (assists==0) {assists=cookiesArr.length}else{assists=Math.min(1,assists)}
             console.log('将帮提供token者助力',assists+'次！！！') 
             for (let code of shareCodes) {
                 console.log('将帮提供token者助力',code.inviter) 
