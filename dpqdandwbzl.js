@@ -188,7 +188,7 @@ async function readapi(product_id,secret) {
     for (let i = 0; i < 5; i++) {
         try {
             //let {data} = await axios.get(`${API_HOST}/remote_config/get?user_id=${app_id}&secret=${secret}&product_id=${product_id}&app_id=${app_id}&app_secret=${app_secret}`)
-            let {data} = await axios.get(`${new Buffer('aHR0cHM6Ly93d3cubXhuenAuY29tL2FwaS9yZW1vdGVfY29uZmlnL2dldD91c2VyX2lkPW92ZGd1cXBmdXZkZ292eHMmYXBwX2lkPW92ZGd1cXBmdXZkZ292eHMmYXBwX3NlY3JldD1TM294VlhaM2JISmtjemwyZWpOSlVXOHhZV3AxZHowOQ==', 'base64').toString()}&secret=${secret}&product_id=${product_id}
+            let {data} = await axios.get(`${new Buffer.from('aHR0cHM6Ly93d3cubXhuenAuY29tL2FwaS9yZW1vdGVfY29uZmlnL2dldD91c2VyX2lkPW92ZGd1cXBmdXZkZ292eHMmYXBwX2lkPW92ZGd1cXBmdXZkZ292eHMmYXBwX3NlY3JldD1TM294VlhaM2JISmtjemwyZWpOSlVXOHhZV3AxZHowOQ==', 'base64').toString()}&secret=${secret}&product_id=${product_id}`)
             if(data){
                 //console.log(data)
                 data = JSON.parse(JSON.stringify(data));
