@@ -51,11 +51,15 @@ let token = []
         }
     }
 
-    //助力token提供者挖宝    
-    if(nowMinutes<1){
-        await $.wait((60-nowSeconds)*1000)
-        await wbzl()
-        } else{await wbzl()} 
+    //助力token提供者挖宝
+    if(nowHours<1){
+        if(nowMinutes<1){
+            await $.wait((60-nowSeconds)*1000)
+            await wbzl()
+        } else{
+            await wbzl()
+        } 
+    }
     //执行通知
     if(nowHours<8){
         if(notify_dpqd){
