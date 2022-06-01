@@ -79,7 +79,7 @@ let token = []
 async function dpqd(){
   for (var j = 0; j < token.length; j++) {
     if(nowHours<9){
-        if (token[j].dday==0) {console.log('今日有奖励店铺已完成，其他店铺其他时段再签！！！');break}
+        if (token[j].dday==0) {console.log('今日无奖励，其他时段再签！！！');continue}
     }
     await signCollectGift(token[j].token,token[j].shopName,token[j].activity)
     await $.wait(200)
@@ -111,10 +111,10 @@ function signCollectGift(token,shopname,activity) {
           data = JSON.parse(/{(.*)}/g.exec(data)[0])
           if (data.success) {
                 console.log( new Date().Format("hh:mm:ss.S")+`${shopname} √`);
-                message += `√店铺（` + shopname + `）\n`
+                message += `√` + shopname + `）\n`
             } else {
                 console.log(new Date().Format("hh:mm:ss.S")+`${shopname} ×`, data.msg);
-                message += `×店铺（` + shopname + `）\n`
+                message += `×` + shopname + `）\n`
             }
         }
       } catch (e) {
