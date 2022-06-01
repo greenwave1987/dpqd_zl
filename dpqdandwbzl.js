@@ -16,11 +16,8 @@ const {SHA256} = require('crypto-js')
 const CryptoJS = require('crypto-js')
 const notify = $.isNode() ? require('./sendNotify') : '';
 var request = require('request');
-const API_HOST = 'https://www.mxnzp.com/api';
 const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
 const timeout = 5000; //超时时间(单位毫秒)
-let app_id = 'ovdguqpfuvdgovxs'
-let app_secret = 'S3oxVXZ3bHJkczl2ejNJUW8xYWp1dz09'
 let nowHours = new Date().getHours()
 let nowMinutes = new Date().getMinutes()
 let nowSeconds = new Date().getSeconds()
@@ -190,7 +187,8 @@ async function readapi(product_id,secret) {
     let productConfig =[]
     for (let i = 0; i < 5; i++) {
         try {
-            let {data} = await axios.get(`${API_HOST}/remote_config/get?user_id=${app_id}&secret=${secret}&product_id=${product_id}&app_id=${app_id}&app_secret=${app_secret}`)
+            //let {data} = await axios.get(`${API_HOST}/remote_config/get?user_id=${app_id}&secret=${secret}&product_id=${product_id}&app_id=${app_id}&app_secret=${app_secret}`)
+            let {data} = await axios.get(`${new Buffer('aHR0cHM6Ly93d3cubXhuenAuY29tL2FwaS9yZW1vdGVfY29uZmlnL2dldD91c2VyX2lkPW92ZGd1cXBmdXZkZ292eHMmYXBwX2lkPW92ZGd1cXBmdXZkZ292eHMmYXBwX3NlY3JldD1TM294VlhaM2JISmtjemwyZWpOSlVXOHhZV3AxZHowOQ==', 'base64').toString()}&secret=${secret}&product_id=${product_id}
             if(data){
                 //console.log(data)
                 data = JSON.parse(JSON.stringify(data));
