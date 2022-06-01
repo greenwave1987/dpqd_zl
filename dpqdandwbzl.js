@@ -9,7 +9,7 @@ let assists = 0
 if (process.env.HELPTIMES){assists = process.env.HELPTIMES} //帮我助力的数量，环境变量为空默认全部帮我助力。
 let maxnums = 5
 if (process.env.MAXNUMS){assists = process.env.MAXNUMS} //最多签到账号数量，环境变量为空默认只签前5个。
-let notify_dpqd = "false"
+let notify_dpqd = false
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 const axios = require('axios')
 const {SHA256} = require('crypto-js')
@@ -50,7 +50,7 @@ let token = []
     }
 
     //助力token提供者挖宝
-    if(nowHours<1){
+    if(nowHours<8){
         if(nowMinutes<1){
             await $.wait((60-nowSeconds)*1000)
             await wbzl()
@@ -138,11 +138,12 @@ async function wbzl(){
             await requestAlgo('ce6c2', 'jdltapp;')
 
             if (shareCodes.length === 0) {'获取助力码失败';break}
-            if (assists==0) {assists=cookiesArr.length}else{assists=Math.min(1,assists)}
+            if (assists==0) {assists=cookiesArr.length}else{assists=Math.max(1,assists)}
             console.log('将帮提供token者助力',assists+'次！！！') 
             shareCodes.sort(function () { return Math.random() - 0.5})
-            shareCodes=shareCodes[0]
-            for (let code of shareCodes) {
+            let codestemp=[]
+            codestemp[0]=shareCodes[0]
+            for (let code of codestemp) {
                 console.log('将帮提供token者助力',code.inviter) 
                 res = await api('happyDigHelp', {
                     "linkId": "pTTvJeSTrpthgk9ASBVGsw","inviter": code.inviter,"inviteCode": code.inviteCode})
