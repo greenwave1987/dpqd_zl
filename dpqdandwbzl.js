@@ -1,72 +1,68 @@
 /**
- * cron: 0,30 0,22 * * *
- * 默认最多跑五个号，可以添加环境变量MAXNUMS
- * 默认全部号给我助力发财挖宝，最少一个，可以添加环境变量HELPTIMES，为空默认全给我助力。
- * 默认8点前不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，8点之后默认通知。
+ * cron: 59 20,22,23 * * *
+ * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。跑几个号就几个号给我助力。
+ * 默认8点前不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，6点之后默认通知。
  */
 const $ = new Env('店铺签到(含挖宝助力）');
-let assists = 0
-if (process.env.HELPTIMES){assists = process.env.HELPTIMES} //帮我助力的数量，环境变量为空默认全部帮我助力。
-let maxnums = 5
-if (process.env.MAXNUMS){assists = process.env.MAXNUMS} //最多签到账号数量，环境变量为空默认只签前5个。
-let notify_dpqd = false
-if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 const axios = require('axios')
 const {SHA256} = require('crypto-js')
 const CryptoJS = require('crypto-js')
 const notify = $.isNode() ? require('./sendNotify') : '';
-var request = require('request');
 const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
-const timeout = 5000; //超时时间(单位毫秒)
+
 let nowHours = new Date().getHours()
 let nowMinutes = new Date().getMinutes()
-let nowSeconds = new Date().getSeconds()
 let cookiesArr = []
-let cookie = '',
-    res = '',
-    message=''
-
 let shareCodes = []
 let token = []
+let cookie = ''
+let res = ''
+let message=''
+let notify_dpqd = false
+if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
+
+let PROXY_HOST ='42.6.114.120'; //例如:127.0.0.1(环境变量名:TG_PROXY_HOST)
+let PROXY_PORT ='7314'; //例如:1080(环境变量名:TG_PROXY_PORT)
+let PROXY_AUTH = ''; //tg代理配置认证参数
 
 !(async () => {
     cookiesArr = await requireConfig()
-    // 获取签到token
-    token =await readapi('50036','ae77e6c5dffb4b269117f613100f2196')
-    token.sort(function () { return Math.random() - 0.5})
-    //console.log(token)
 
-    //店铺签到
-    for (let [index, value] of cookiesArr.entries()) {
-        try {
-            cookie = value
-            console.log(`\n开始【京东账号${index + 1}】\n`)
-            message +=`\n【第${index + 1}京东账号签到结果】\n`
-            if(index >maxnums-1){`都签${maxnums}个号了，退出吧，留给别人点，小心黑IP！！！！`;break}
-            await dpqd()
-        } catch (e) {
-            console.log('error', e)
+    if (nowHours==23&&nowMinutes>55){
+    //执行第一步，店铺签到
+    console.log(`马上零点，等待开始*******`)
+        await waitfor()
+        firststep();
+    //执行第二步，为token提供者助力挖宝
+        if(new Date().getMinutes()<1){
+            await $.wait((60-new Date().getSeconds())*1000)
+            await wbzl()
+        }	 
+    //22点默认不执行，如脚本出错，会修改API再执行一次。
+    }else if (nowHours==22&&nowMinutes>55){
+        console.log(`等待获取该时间点是否执行命令设置*******`)
+        let emergency =await readapi('50038','21502f3b390942c3b9c4ddad7c7f9bb7')
+        if(emergency[0].retry==1){
+            console.log(`再次执行签到程序******`)
+            await firststep();
         }
-    }
-
-    //助力token提供者挖宝
-    if(nowHours<8){
-        if(nowMinutes<1){
-            await $.wait((60-nowSeconds)*1000)
-            await wbzl()
-        } else{
-            await wbzl()
-        } 
-    }
-    //执行通知
-    if(nowHours<8){
-        if(notify_dpqd){
-            await showMsg()
-            }
+        if(emergency[1].retry==1){
+            console.log(`再次执行助力程序******`)
+            await wbzl();
+        }
+    //手动执行所有都执行一次                  
     }else{
-        await showMsg()
-        }  
-               
+        await firststep();
+        await wbzl();
+    } 
+    //执行第三步，发送通知,8点前不发送通知    
+    if (new Date().getHours()<6){
+        console.log(`6点之前默认不推送！`)
+        if(notify_dpqd){
+            console.log(`你设置了推送，开始发送通知！`)
+            await showMsg()
+        }else{await showMsg()}
+    };                     
 })()
     .catch((e) => {
       $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
@@ -75,14 +71,40 @@ let token = []
       $.done();
     })
   
-//开始店铺签到
+//店铺签到
+
+async function firststep(){
+    // 获取签到token
+    token =await readapi('50036','ae77e6c5dffb4b269117f613100f2196')
+    token.sort(function () { return Math.random() - 0.5})
+    //console.log(token)
+
+    //按用户顺序签到
+    for (let [index, value] of cookiesArr.entries()) {
+        try {
+            cookie = value
+            console.log(`\n开始【京东账号${index + 1}】\n`)
+            message +=`\n【第${index + 1}京东账号签到结果】\n`
+            await dpqd()
+            //await $.wait(100)
+        } catch (e) {
+            console.log('error', e)
+        }
+    }
+}
+//按店铺顺序签到
 async function dpqd(){
   for (var j = 0; j < token.length; j++) {
-    if(nowHours<9){
-        if (token[j].dday==0) {console.log('今日无奖励，其他时段再签！！！');continue}
+    if(new Date().getHours()<9){
+        if (token[j].dday==0) {
+            console.log('今日无奖励，其他时段再签！！！');
+            continue
+        }
     }
     await signCollectGift(token[j].token,token[j].shopName,token[j].activity)
-    await $.wait(200)
+    let waittime
+    new Date().getHours()==0 ? waittime=500:waittime=getRandomNumberByRange(2000, 6000)
+    await $.wait(waittime)
   }
 }
 
@@ -101,6 +123,7 @@ function signCollectGift(token,shopname,activity) {
         // "User-Agent": `Mozilla/5.0 (Linux; U; Android 10; zh-cn; MI 8 Build/QKQ1.190828.002) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/79.0.3945.147 Mobile Safari/537.36 XiaoMi/MiuiBrowser/13.5.40`
       }
     }
+    //proxy(options)
     $.get(options, (err, resp, data) => {
       try {
         if (err) {
@@ -110,11 +133,11 @@ function signCollectGift(token,shopname,activity) {
           //console.log(data)
           data = JSON.parse(/{(.*)}/g.exec(data)[0])
           if (data.success) {
-                console.log( new Date().Format("hh:mm:ss.S")+`${shopname} √`);
-                message += `√` + shopname + `）\n`
+                console.log( new Date().Format("hh:mm:ss.S")+`——√ ${shopname}`);
+                message += `√ ` + shopname + `签到成功！\n`
             } else {
-                console.log(new Date().Format("hh:mm:ss.S")+`${shopname} ×`, data.msg);
-                message += `×` + shopname + `）\n`
+                console.log(new Date().Format("hh:mm:ss.S")+`——× ${shopname} `, cutlog(data.msg));
+                message += `× ` + shopname+cutlog(data.msg) + `\n`
             }
         }
       } catch (e) {
@@ -128,18 +151,15 @@ function signCollectGift(token,shopname,activity) {
 
 // 发财挖宝助力
 async function wbzl(){
-    shareCodes = await readapi('50035','5fbed831fb4043d6968ae10ec38ee991')
-    
+    shareCodes = await readapi('50035','5fbed831fb4043d6968ae10ec38ee991')    
     //console.log(shareCodes)
     for (let [index, value] of cookiesArr.entries()) {
         try {
             cookie = value
             console.log(`\n开始【京东账号${index + 1}】\n`)
             await requestAlgo('ce6c2', 'jdltapp;')
-
-            if (shareCodes.length === 0) {'获取助力码失败';break}
-            if (assists==0) {assists=cookiesArr.length}else{assists=Math.max(1,assists)}
-            console.log('将帮提供token者助力',assists+'次！！！') 
+            if (shareCodes.length === 0) {console.log('获取助力码失败');break}
+            console.log('将帮提供token者助力！！！') 
             shareCodes.sort(function () { return Math.random() - 0.5})
             let codestemp=[]
             codestemp[0]=shareCodes[0]
@@ -287,6 +307,24 @@ function getRandomNumberByRange(start, end) {
     return Math.floor(Math.random() * (end - start) + start)
 }
 
+//定义agent代理函数
+async function proxy(options) {
+    //console.log(yxl.GetDateTime(new Date())+'开始设置代理')
+  if (PROXY_HOST && PROXY_PORT) {
+    const tunnel = require("tunnel");
+    const agent = {
+      https: tunnel.httpsOverHttp({
+        proxy: {
+          host: PROXY_HOST,
+          port: PROXY_PORT * 1,
+          proxyAuth: PROXY_AUTH
+        }
+      })
+    }
+    Object.assign(options, {agent})
+  }
+  //console.log(yxl.GetDateTime(new Date())+'设置代理完成')
+}
 //时间格式
 Date.prototype.Format = function (fmt) { //author: meizz
     var o = {
@@ -304,7 +342,19 @@ Date.prototype.Format = function (fmt) { //author: meizz
             1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
     return fmt;
 }
-
+//定义等待函数，如果当前分钟数大于58，则等待设定秒数
+async function waitfor(starttime = 59.85) {
+	if (new Date().Format("mm") > 58) {
+        console.log(`快到整点时间，需等待约59s开始签到........`);
+		const nowtime = new Date().Format("s.S")
+        const sleeptime = (starttime - nowtime) * 1000;
+		console.log(`本次实际等待时间 ${sleeptime / 1000}`);
+		await $.wait(sleeptime)
+	}else{
+        console.log(`马上开始签到..........`);
+        await $.wait(0)
+        }
+}
 //定义通知函数
 async function showMsg() {
   if ($.isNode()) {
@@ -312,7 +362,14 @@ async function showMsg() {
     await notify.sendNotify(`${$.name}`, `${message}`);
   }
 }
-
+//精简log
+function cutlog(log) {
+    if(log){	  
+	    log=log.replace("对不起，你已经参加过该活动啦，去看看别的吧"," 今日已签过");
+        log=log.replace("当前不存在有效的活动"," 已被撸空了");
+    }
+    return log
+}
 function randomString(e) {
   e = e || 32;
   let t = "abcdef0123456789", a = t.length, n = "";
