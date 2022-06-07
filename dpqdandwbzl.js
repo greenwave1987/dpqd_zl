@@ -34,10 +34,11 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
         await waitfor()
         firststep();
     //执行第二步，为token提供者助力挖宝
+    console.log(`现在是`+new Date().getMinutes()+'分')
         if(new Date().getMinutes()<1){
             await $.wait((60-new Date().getSeconds())*1000)
             await wbzl()
-        }	 
+        }else(await wbzl())	 
     //22点默认不执行，如脚本出错，会修改API再执行一次。
     }else if (nowHours==22&&nowMinutes>55){
         console.log(`等待获取该时间点是否执行命令设置*******`)
@@ -57,12 +58,12 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
     } 
     //执行第三步，发送通知,8点前不发送通知    
     if (new Date().getHours()<6){
-        console.log(`6点之前默认不推送！`)
+        console.log('现在'+new Date().getHours()+`点,默认不推送！`)
         if(notify_dpqd){
             console.log(`你设置了推送，开始发送通知！`)
             await showMsg()
-        }else{await showMsg()}
-    };                     
+        }
+    }else{await showMsg()};                     
 })()
     .catch((e) => {
       $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
