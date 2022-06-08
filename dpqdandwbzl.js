@@ -193,7 +193,7 @@ async function wbzl(){
         }
     } 
 }
-
+// 以下都是抄来的，我也不知道干啥用的，不要瞎改就对了
 async function api(fn, body) {
     let timestamp = Date.now(),
         t = [{key: 'functionId',value: fn},
@@ -258,7 +258,6 @@ async function requireConfig(check = false) {
     console.log(`共${cookiesArr.length}个京东账号\n`)
     return cookiesArr
 }
-
 
 async function checkjs(name,str) {
   var fs = require('fs')
@@ -326,7 +325,7 @@ async function requestAlgo(appId, USER_AGENT = 'jdpingou;') {
 function getRandomNumberByRange(start, end) {
     return Math.floor(Math.random() * (end - start) + start)
 }
-
+// 以上都是抄来的，我也不知道干啥用的，不要瞎改就对了
 //定义agent代理函数
 async function proxy(options) {
     //console.log(yxl.GetDateTime(new Date())+'开始设置代理')
@@ -391,6 +390,7 @@ function cutlog(log) {
     }
     return log
 }
+//随机UA
 function randomString(e) {
   e = e || 32;
   let t = "abcdef0123456789", a = t.length, n = "";
