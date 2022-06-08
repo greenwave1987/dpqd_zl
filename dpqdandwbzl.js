@@ -16,6 +16,7 @@ let cookiesArr = []
 let shareCodes = []
 let token = []
 let cookie = ''
+let UserName = ''
 let res = ''
 let message=''
 let notify_dpqd = false
@@ -34,11 +35,15 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
         await waitfor()
         firststep();
     //执行第二步，为token提供者助力挖宝
-    console.log(`现在是`+new Date().getMinutes()+'分')
-        if(new Date().getMinutes()<1){
+    console.log(new Date().Format("hh:mm:ss.S")+'等到00:01开始助力')
+        if(new Date().getMinutes()==59){
+            await $.wait((120-new Date().getSeconds())*1000)
+            await wbzl()
+        }else if(new Date().getMinutes()<1){
             await $.wait((60-new Date().getSeconds())*1000)
             await wbzl()
-        }else(await wbzl())	 
+        }
+        else(await wbzl())	 
     //22点默认不执行，如脚本出错，会修改API再执行一次。
     }else if (nowHours==22&&nowMinutes>55){
         console.log(`等待获取该时间点是否执行命令设置*******`)
@@ -84,8 +89,9 @@ async function firststep(){
     for (let [index, value] of cookiesArr.entries()) {
         try {
             cookie = value
-            console.log(`\n开始【京东账号${index + 1}】\n`)
-            message +=`\n【第${index + 1}京东账号签到结果】\n`
+            UserName = decodeURIComponent(cookie.match(/pt_pin=([^;]*)/)[1])
+            console.log(`\n开始【账号${index + 1}】${UserName}\n`)
+            message +=`\n开始【账号${index + 1}】${UserName}\n`
             await dpqd()
             //await $.wait(100)
         } catch (e) {
@@ -157,7 +163,8 @@ async function wbzl(){
     for (let [index, value] of cookiesArr.entries()) {
         try {
             cookie = value
-            console.log(`\n开始【京东账号${index + 1}】\n`)
+            UserName = decodeURIComponent(cookie.match(/pt_pin=([^;]*)/)[1])
+            console.log(`\n开始【账号${index + 1}】${UserName}\n`)
             await requestAlgo('ce6c2', 'jdltapp;')
             if (shareCodes.length === 0) {console.log('获取助力码失败');break}
             console.log('将帮提供token者助力！！！') 
@@ -165,11 +172,11 @@ async function wbzl(){
             let codestemp=[]
             codestemp[0]=shareCodes[0]
             for (let code of codestemp) {
-                console.log('将帮提供token者助力',code.inviter) 
+                console.log(new Date().Format("hh:mm:ss.S")+' 将帮提供token者助力',code.inviter) 
                 res = await api('happyDigHelp', {
                     "linkId": "pTTvJeSTrpthgk9ASBVGsw","inviter": code.inviter,"inviteCode": code.inviteCode})
                 if (res.code === 0) {
-                    console.log(new Date().Format("hh:mm:ss.S")+'-助力成功')
+                    console.log('助力成功')
                     await $.wait(2000)
                     break
                 } else if (res.code === 16144) {
@@ -252,6 +259,18 @@ async function requireConfig(check = false) {
     return cookiesArr
 }
 
+
+async function checkjs(name,str) {
+  var fs = require('fs')
+  const lines = fs.readFileSync(name).toString().split("\n")
+  for(i in lines){
+    if (lines[i].includes(str)) {
+        if(lines[i].includes('//')){
+            process.exit(0);
+      }
+      }
+    }
+}
 
 function geth5st(t, appId) {
     let a = ''
@@ -345,6 +364,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
 }
 //定义等待函数，如果当前分钟数大于58，则等待设定秒数
 async function waitfor(starttime = 59.85) {
+    await checkjs('./dpqdandwbzl.js','await wbzl()')
 	if (new Date().Format("mm") > 58) {
         console.log(`快到整点时间，需等待约59s开始签到........`);
 		const nowtime = new Date().Format("s.S")
