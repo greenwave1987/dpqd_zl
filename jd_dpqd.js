@@ -1,6 +1,6 @@
 /*
-店铺签到完整版，浏览-查询-签到
-cron "10 23 * * *
+店铺签到，浏览-查询-签到
+cron "15 2,14 * * *
 */
 const $ = new Env('店铺签到');
 const axios = require('axios')
@@ -13,9 +13,9 @@ const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
 
 let activityId=''
 let vender=''
-let num=0
 let shopname=''
 let token = []
+let logtemp=[]
 
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
@@ -77,15 +77,18 @@ async function dpqd(){
   token =await readapi('50039','d397e3b59c6d45589758cdc1df84309a')
   token.sort(function () { return Math.random() - 0.5})
   //console.log(token)
-  let logtemp=[]
+  
   for (var j = 0; j < token.length; j++) {
-    num=j+1
+    logtemp=[]
     getUA()
     await getvenderName(token[j].vender)
+    if(!shopname){await getvenderName1(token[j].vender)}
+    logtemp.push(shopName+`:`)
+    message +=shopName+`:`
     await getvender(token[j].vender)
     await signCollectGift(token[j].token,token[j].activity)
     await taskUrl(token[j].token,token[j].vender,token[j].activity)
-    console.log(logtemp)
+    console.log(logtemp.join('→') )
     await $.wait(5000)
   }
 }
@@ -113,8 +116,40 @@ function getvenderName(venderId) {
           //console.log(data)
           data = JSON.parse(data)
           shopName = data.shopName
-          logtemp.push(`【`+shopName+`】\n`)
-          message +=`【`+shopName+`】`
+          
+        }
+      } catch (e) {
+        $.logErr(e, resp);
+      } finally {
+        resolve(data);
+      }
+    })
+  })
+}
+//获取店铺名称
+async function getvenderName1(venderId) {
+  return new Promise(resolve => {
+    const options = {
+      url: `https://wqshop.jd.com/mshop/GetShopIntroduce?venderId=${venderId}`,
+      headers: {
+        "accept": "*/*",
+        "accept-encoding": "gzip, deflate, br",
+        "accept-language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
+        //"cookie": cookie,
+        "User-Agent": `Mozilla/5.0 (Linux; U; Android 10; zh-cn; MI 8 Build/QKQ1.190828.002) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/79.0.3945.147 Mobile Safari/537.36 XiaoMi/MiuiBrowser/13.5.40`
+      }
+    }
+    $.get(options, (err, resp, data) => {
+      try {
+        if (err) {
+          console.log(`\n${$.name}: 获取店铺名称查询请求失败 ‼️‼️`)
+          $.logErr(err);
+        } else {
+          console.log(data)
+          shopName = data.substring(data.indexOf('<title>')+7,data.indexOf('</title>')).replace(/^\s*|\s*$/g,"");
+          shopName = cutshopname(shopName)
+          //console.log(`【` + shopName + `】`)
+          //message += shopName + `;`
         }
       } catch (e) {
         $.logErr(e, resp);
@@ -142,7 +177,8 @@ async function getvender(Id) {
             if (err) {
             $.logErr(err);
             } else { 
-                logtemp.push('①浏览店铺完成;')
+                logtemp.push('浏览店铺')
+                message += '浏览店铺;'
             }
         } catch (e) {
             $.logErr(e, resp);
@@ -177,11 +213,11 @@ function signCollectGift(token,activity) {
           //console.log(data)
           data = JSON.parse(/{(.*)}/g.exec(data)[0])
           if (data.success) {
-                logtemp.push(` √;`)
-                message += `√`
+                logtemp.push(`签到`)
+                message += `签到;`
             } else {
-                logtemp.push(cutlog(data.msg)+';')
-                message += `× ` + cutlog(data.msg)
+                logtemp.push(cutlog(data.msg))
+                message += cutlog(data.msg)
             }
         }
       } catch (e) {
@@ -217,8 +253,8 @@ function taskUrl(token,venderId,activityId) {
         } else {
           //console.log(data)
           data = JSON.parse(/{(.*)}/g.exec(data)[0])
-          cutlog(`    已签：`+data.data.days+`天。`)
-          message +=`已签：`+data.data.days+`天\n`
+          logtemp.push('已签`+data.data.days+`天。')
+          message +=`已签`+data.data.days+`天。\n`
         }
       } catch (e) {
         $.logErr(e, resp);
@@ -318,14 +354,6 @@ function jsonParse(str) {
   }
 }
 
-function randomString(e) {
-  e = e || 32;
-  let t = "abcdef0123456789", a = t.length, n = "";
-  for (i = 0; i < e; i++)
-    n += t.charAt(Math.floor(Math.random() * a));
-  return n
-}
-
 //精简log
 function cutlog(log) {
     if(log){	  
@@ -334,6 +362,27 @@ function cutlog(log) {
     }
     return log
 }
+//精简店铺名称
+function cutshopname(shopname) {
+    if(!shopname){
+        shopname='No name'
+    }else{	  
+	    shopname=shopname.replace("京东自营旗舰店","(自营)").replace("京东自营官方旗舰店","(自营官方)").replace("京东自营专区","(专区)");
+	    shopname=shopname.replace("官方旗舰店","(官方)");
+	    shopname=shopname.replace("旗舰店","(旗舰)").replace("专营店","(专营)").replace("专卖店","(专卖)");	
+        shopname=shopname.replace("超级体验店","(体验)"); 
+    }
+    return shopname
+}
+
+function randomString(e) {
+  e = e || 32;
+  let t = "abcdef0123456789", a = t.length, n = "";
+  for (i = 0; i < e; i++)
+    n += t.charAt(Math.floor(Math.random() * a));
+  return n
+}
+
 function getUA() {
   $.UA = `jdapp;iPhone;10.2.2;13.1.2;${randomString(40)};M/5.0;network/wifi;ADID/;model/iPhone8,1;addressid/2308460611;appBuild/167863;jdSupportDarkMode/0;Mozilla/5.0 (iPhone; CPU iPhone OS 13_1_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1;`
 }
