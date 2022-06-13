@@ -145,7 +145,7 @@ async function getvenderName1(venderId) {
           console.log(`\n${$.name}: 获取店铺名称查询请求失败 ‼️‼️`)
           $.logErr(err);
         } else {
-          console.log(data)
+         // console.log(data)
           shopName = data.substring(data.indexOf('<title>')+7,data.indexOf('</title>')).replace(/^\s*|\s*$/g,"");
           shopName = cutshopname(shopName)
           //console.log(`【` + shopName + `】`)
