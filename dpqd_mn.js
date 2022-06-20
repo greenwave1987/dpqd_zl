@@ -1,7 +1,16 @@
 /*
 店铺签到，浏览-查询-签到
 cron "15 2,14 * * *
+TK_SIGN格式：{"id":*,"sign":"**********************"}
 */
+let TK_SIGN
+if (process.env.TK_SIGN) {
+	TK_SIGN = JSON.parse(process.env.TK_SIGN)
+}
+if (!TK_SIGN) {
+	console.log('联系@dpqd_boss获取TK_SIGN.')
+	return
+}
 const $ = new Env('店铺签到');
 const axios = require('axios')
 const notify = $.isNode() ? require('./sendNotify') : '';
@@ -13,7 +22,7 @@ const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
 
 let activityId=''
 let vender=''
-let shopname=''
+let shopName=''
 let token = []
 let logtemp=[]
 
@@ -74,7 +83,8 @@ if ($.isNode()) {
 async function dpqd(){
   // 获取签到token
   console.log('获取签到token')
-  token =await readapi('50039','d397e3b59c6d45589758cdc1df84309a')
+  //token =await readapi('50039','d397e3b59c6d45589758cdc1df84309a')
+  token = await readapi1('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
   token.sort(function () { return Math.random() - 0.5})
   //console.log(token)
   
@@ -82,7 +92,7 @@ async function dpqd(){
     logtemp=[]
     getUA()
     await getvenderName(token[j].vender)
-    if(!shopname){await getvenderName1(token[j].vender)}
+    if(shopName=='No name'){await getvenderName1(token[j].vender)}
     logtemp.push(shopName+`:`)
     message +=shopName+`:`
     await getvender(token[j].vender)
@@ -115,7 +125,7 @@ function getvenderName(venderId) {
         } else {
           //console.log(data)
           data = JSON.parse(data)
-          shopName = data.shopName
+          shopName = cutshopname(data.shopName)
           
         }
       } catch (e) {
@@ -145,7 +155,7 @@ async function getvenderName1(venderId) {
           console.log(`\n${$.name}: 获取店铺名称查询请求失败 ‼️‼️`)
           $.logErr(err);
         } else {
-         // console.log(data)
+          console.log(data)
           shopName = data.substring(data.indexOf('<title>')+7,data.indexOf('</title>')).replace(/^\s*|\s*$/g,"");
           shopName = cutshopname(shopName)
           //console.log(`【` + shopName + `】`)
@@ -253,7 +263,7 @@ function taskUrl(token,venderId,activityId) {
         } else {
           //console.log(data)
           data = JSON.parse(/{(.*)}/g.exec(data)[0])
-          logtemp.push('已签`+data.data.days+`天。')
+          logtemp.push('已签'+data.data.days+'天。')
           message +=`已签`+data.data.days+`天。\n`
         }
       } catch (e) {
@@ -285,7 +295,26 @@ async function readapi(product_id,secret) {
     }
     return(productConfig)
 }
-
+async function readapi1(model_name,id,sign) {
+    let URIDATA =[]
+    for (let i = 0; i < 5; i++) {
+        try {
+            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vYXBpL0FwcC9UYWJsZS9HZXQ/YXBwX2tleT0wNkU2MjhGQzIyMzM2NkU2MEIxQTUzRjAxMkMxRTc2OA==', 'base64').toString()}&model_name=${model_name}&id=${id}&sign=${sign}`)
+            if(data.ret===200){
+                //console.log(data)
+                data = JSON.parse(JSON.stringify(data));
+                URIDATA = JSON.parse(data.data.data.URIDATA) || []
+                if (URIDATA !== 0) {
+                    break
+                }else{console.log('未获取到数据！！')}
+            }
+        } catch (e) {
+            console.log(e)
+            await $.wait(getRandomNumberByRange(1000, 4000))
+        }
+    }
+    return(URIDATA)
+}
 function getRandomNumber(start, end) {
     return Math.floor(Math.random() * (end - start) + start)
 }
@@ -357,8 +386,8 @@ function jsonParse(str) {
 //精简log
 function cutlog(log) {
     if(log){	  
-	    log=log.replace("对不起，你已经参加过该活动啦，去看看别的吧"," 今日已签过");
-        log=log.replace("当前不存在有效的活动"," 已被撸空了");
+	    log=log.replace("对不起，你已经参加过该活动啦，去看看别的吧"," 今日已签");
+        log=log.replace("当前不存在有效的活动"," 已被撸空");
     }
     return log
 }
