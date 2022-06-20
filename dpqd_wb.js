@@ -1,7 +1,7 @@
 /**
- * cron: 59 22,23 * * *
+ * cron: 59 0,23 * * *
  * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。跑几个号就几个号给我助力。
- * 默认8点前不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，6点之后默认通知。
+ * 默认不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，能不能签到豆查询就好了，签到通知与否没关系。
 *  环境变量名称：TK_SIG，环境变量值：{"id":*,"sign":"**********************"}
 */
 let TK_SIGN
@@ -31,10 +31,6 @@ let message=''
 let notify_dpqd = false
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 
-let PROXY_HOST ='42.6.114.120'; //例如:127.0.0.1(环境变量名:TG_PROXY_HOST)
-let PROXY_PORT ='7314'; //例如:1080(环境变量名:TG_PROXY_PORT)
-let PROXY_AUTH = ''; //tg代理配置认证参数
-
 !(async () => {
     cookiesArr = await requireConfig()
     // 获取签到token
@@ -59,14 +55,7 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
         }
         else(await wbzl())	 
     //22点默认不执行，如脚本出错，会修改API再执行一次。
-    }else if (nowHours==22&&nowMinutes>55){
-        console.log(`等待获取该时间点是否执行命令设置*******`)
-        let emergency =await readapi('50038','21502f3b390942c3b9c4ddad7c7f9bb7')
-        if(emergency[0].retry==1){
-            console.log(`再次执行签到程序******`)
-            await firststep();
-        }
-        if(emergency[1].retry==1){
+    }else if (nowHours==0&&nowMinutes>55){
             console.log(`再次执行助力程序******`)
             await wbzl();
         }
@@ -75,8 +64,8 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
         await firststep();
         await wbzl();
     } 
-    //执行第三步，发送通知,8点前不发送通知    
-    if (new Date().getHours()<6){
+    //执行第三步，发送通知,默认0点不发送通知    
+    if (new Date().getHours()<1){
         console.log('现在'+new Date().getHours()+`点,默认不推送！`)
         if(notify_dpqd){
             console.log(`你设置了推送，开始发送通知！`)
@@ -166,7 +155,6 @@ function signCollectGift(token,shopname,activity) {
 
 // 发财挖宝助力
 async function wbzl(){
-    //shareCodes = await readapi('50035','5fbed831fb4043d6968ae10ec38ee991')
     shareCodes = await readapi1('sharecode',1,'56F2D2A7A034CFD04DBF13CB75EDEFB6')    
     //console.log(shareCodes)
     for (let [index, value] of cookiesArr.entries()) {
