@@ -2,7 +2,16 @@
  * cron: 59 20,22,23 * * *
  * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。跑几个号就几个号给我助力。
  * 默认8点前不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，6点之后默认通知。
- */
+*  环境变量名称：TK_SIG，环境变量值：{"id":*,"sign":"**********************"}
+*/
+let TK_SIGN
+if (process.env.TK_SIGN) {
+	TK_SIGN = JSON.parse(process.env.TK_SIGN)
+}
+if (!TK_SIGN) {
+	console.log('联系@dpqd_boss获取TK_SIGN.')
+	return
+}
 const $ = new Env('店铺签到(含挖宝助力）');
 const axios = require('axios')
 const {SHA256} = require('crypto-js')
@@ -28,6 +37,11 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
 
 !(async () => {
     cookiesArr = await requireConfig()
+    // 获取签到token
+    //token =await readapi('50036','ae77e6c5dffb4b269117f613100f2196')
+    token = await readapi1('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
+    token.sort(function () { return Math.random() - 0.5})
+    //console.log(token)
 
     if (nowHours==23&&nowMinutes>55){
     //执行第一步，店铺签到
@@ -78,13 +92,7 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
     })
   
 //店铺签到
-
 async function firststep(){
-    // 获取签到token
-    token =await readapi('50036','ae77e6c5dffb4b269117f613100f2196')
-    token.sort(function () { return Math.random() - 0.5})
-    //console.log(token)
-
     //按用户顺序签到
     for (let [index, value] of cookiesArr.entries()) {
         try {
@@ -158,7 +166,8 @@ function signCollectGift(token,shopname,activity) {
 
 // 发财挖宝助力
 async function wbzl(){
-    shareCodes = await readapi('50035','5fbed831fb4043d6968ae10ec38ee991')    
+    //shareCodes = await readapi('50035','5fbed831fb4043d6968ae10ec38ee991')
+    shareCodes = await readapi1('sharecode',1,'56F2D2A7A034CFD04DBF13CB75EDEFB6')    
     //console.log(shareCodes)
     for (let [index, value] of cookiesArr.entries()) {
         try {
@@ -235,6 +244,27 @@ async function readapi(product_id,secret) {
         }
     }
     return(productConfig)
+}
+
+async function readapi1(model_name,id,sign) {
+    let URIDATA =[]
+    for (let i = 0; i < 5; i++) {
+        try {
+            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vYXBpL0FwcC9UYWJsZS9HZXQ/YXBwX2tleT0wNkU2MjhGQzIyMzM2NkU2MEIxQTUzRjAxMkMxRTc2OA==', 'base64').toString()}&model_name=${model_name}&id=${id}&sign=${sign}`)
+            if(data.ret===200){
+                //console.log(data)
+                data = JSON.parse(JSON.stringify(data));
+                URIDATA = JSON.parse(data.data.data.URIDATA) || []
+                if (URIDATA !== 0) {
+                    break
+                }else{console.log('未获取到数据！！')}
+            }
+        } catch (e) {
+            console.log(e)
+            await $.wait(getRandomNumberByRange(1000, 4000))
+        }
+    }
+    return(URIDATA)
 }
 
 async function requireConfig(check = false) {
