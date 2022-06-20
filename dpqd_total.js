@@ -64,7 +64,7 @@ if ($.isNode()) {
         continue
       }
       await dpqd()
-      //await showMsg()
+      await showMsg()
       await $.wait(5000)
     }
   }
