@@ -1,6 +1,6 @@
 /*
-店铺签到，浏览-查询-签到
-cron "15 2,14 * * *
+步骤：浏览-签到-查询签到天数
+cron "10 22 * * *
 TK_SIGN格式：{"id":*,"sign":"**********************"}
 */
 let TK_SIGN
@@ -82,8 +82,9 @@ if ($.isNode()) {
 //开始店铺签到
 async function dpqd(){
   // 获取签到token
-  console.log('获取签到token')
-  //token =await readapi('50039','d397e3b59c6d45589758cdc1df84309a')
+  let radomtime=Math.round(Math.random()*100000/1000);
+  console.log('获取签到token，等待${radomtime/1000}秒.....')
+  await $.wait(radomtime*1000)
   token = await readapi1('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
   token.sort(function () { return Math.random() - 0.5})
   //console.log(token)
