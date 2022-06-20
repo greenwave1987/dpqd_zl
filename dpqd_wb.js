@@ -110,9 +110,9 @@ async function firststep(){
 //按店铺顺序签到
 async function dpqd(){
   for (var j = 0; j < token.length; j++) {
-    if(new Date().getHours()<9){
+    if(new Date().getHours()<1){
         if (token[j].dday==0) {
-            console.log('今日无奖励，其他时段再签！！！');
+            //console.log('今日无奖励，其他时段再签！！！');
             continue
         }
     }
