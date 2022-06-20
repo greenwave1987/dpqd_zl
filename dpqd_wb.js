@@ -84,7 +84,9 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
             console.log(`你设置了推送，开始发送通知！`)
             await showMsg()
         }
-    }else{await showMsg()};                     
+    }else{
+        await showMsg()
+        };                     
 })()
     .catch((e) => {
       $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
@@ -252,8 +254,8 @@ async function getvender(Id) {
             if (err) {
             $.logErr(err);
             } else { 
-                logtemp.push('浏览店铺')
-                message += '浏览店铺;'
+                logtemp.push('逛店铺')
+                message += '逛店铺;'
             }
         } catch (e) {
             $.logErr(e, resp);
@@ -550,8 +552,8 @@ async function showMsg() {
 //精简log
 function cutlog(log) {
     if(log){	  
-	    log=log.replace("对不起，你已经参加过该活动啦，去看看别的吧"," 今日已签过");
-        log=log.replace("当前不存在有效的活动"," 已被撸空了");
+	    log=log.replace("对不起，你已经参加过该活动啦，去看看别的吧"," 已签");
+        log=log.replace("当前不存在有效的活动"," 被撸空了");
     }
     return log
 }
