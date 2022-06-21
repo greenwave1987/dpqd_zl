@@ -13,93 +13,6 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 let cookiesArr = [], cookie = '', allMessage = '', message;
 let myMap = new Map();
 let allBean = 0;
-/*//IOS等用户直接用NobyDa的jd cookie
-let cookiesArr = [], cookie = '';
-if ($.isNode()) {
-  Object.keys(jdCookieNode).forEach((item) => {
-    cookiesArr.push(jdCookieNode[item])
-  })
-  if (process.env.JD_DEBUG && process.env.JD_DEBUG === 'false') console.log = () => {};
-} else {
-  cookiesArr = [$.getdata('CookieJD'), $.getdata('CookieJD2'), ...jsonParse($.getdata('CookiesJD') || "[]").map(item => item.cookie)].filter(item => !!item);
-}
-
-let intcheckckseq=999999;
-let strcheckck = process.env.BOTCHECKCODE;
-
-if(!strcheckck){
-	console.log("【账号🆔】没有获取到要查询的账号");
-	return
-}
-
-for (i = 0; i < cookiesArr.length; i++) {
-    if (cookiesArr[i]) {
-        cookie = cookiesArr[i];
-        $.pt_pin = (cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
-        if (strcheckck == $.pt_pin) {
-            intcheckckseq = i;
-            break;
-        }
-    }
-}
-
-if (intcheckckseq == 999999) {
-    if (IsNumber(strcheckck)) {
-        if (parseInt(strcheckck) > cookiesArr.length) {
-            console.log('【账号'+strcheckck+'🆔】你哪来那么多账号,没点逼数吗');
-            return
-        }
-        intcheckckseq = parseInt(strcheckck) - 1;
-    }
-}
-console.log("当前查询的CK序号是:"+(intcheckckseq+1));
-
-!(async() => {
-    if (!cookiesArr[intcheckckseq]) {
-        $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/bean/signIndex.action', {
-            "open-url": "https://bean.m.jd.com/bean/signIndex.action"
-        });
-        return;
-    }
-    i = intcheckckseq;
- 
- 	
-    if (cookiesArr[i]) {
-        cookie = cookiesArr[i];
-        $.UserName = decodeURIComponent(cookie.match(/pt_pin=([^; ]+)(?=;?)/) && cookie.match(/pt_pin=([^; ]+)(?=;?)/)[1]);
-        $.index = i + 1;
-        $.beanCount = 0;
-        $.incomeBean = 0;
-        $.expenseBean = 0;
-        $.todayIncomeBean = 0;
-        $.errorMsg = '';
-        $.isLogin = true;
-        $.nickName = '';
-        $.message = '';
-        $.balance = 0;
-        $.expiredBalance = 0;
-        await TotalBean();
-        //console.log(`\n********开始【京东账号${$.index}】${$.nickName || $.UserName}******\n`);
-        if (!$.isLogin) {
-            console.log(`【提示】cookie已失效,\n请重新登录获取\nhttps://bean.m.jd.com/bean/signIndex.action`);
-            return;			
-        }
-        await bean();
-        await showMsg();
-
-    }
-	allMessage = `【账号🆔${(intcheckckseq+1)}详情统计】收入：${$.todayIncomeBean}京豆\n`+allMessage;
-    console.log(`${allMessage}`);
-    
-})()
-.catch((e) => {
-    // $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
-})
-.finally(() => {
-    $.done();
-})
-* */
-
 
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
@@ -117,6 +30,7 @@ if ($.isNode()) {
 }
 
 !(async () => {
+  
   if (!cookiesArr[0]) {
     $.msg($.name, '【提示】请先获取京东账号一cookie\n直接使用NobyDa的京东签到获取', 'https://bean.m.jd.com/bean/signIndex.action', {"open-url": "https://bean.m.jd.com/bean/signIndex.action"});
     return;
@@ -138,6 +52,7 @@ if ($.isNode()) {
         $.expiredBalance = 0;
         allMessage = '';
       await TotalBean();
+      
       console.log(`\n******开始【京东账号${$.index}】${$.nickName || $.UserName}*********\n`);
       if (!$.isLogin) {
         $.msg($.name, `【提示】cookie已失效`, `京东账号${$.index} ${$.nickName || $.UserName}\n请重新登录获取\nhttps://bean.m.jd.com/bean/signIndex.action`, {"open-url": "https://bean.m.jd.com/bean/signIndex.action"});
@@ -146,7 +61,7 @@ if ($.isNode()) {
         }
         continue
       }
-
+        await queryGiftCard()
         await bean();
         await showMsg();
 
@@ -293,6 +208,44 @@ function TotalBean() {
     })
   })
 }
+async function queryGiftCard() {
+    return new Promise((resolve, reject) => {
+        let option = taskurl_xh()
+        $.post(option, (err, resp, data) => {
+            try {
+                if (err) {
+                    console.log('err', err)
+                } else {
+                    data = JSON.parse(data);
+					          if (data.code === 'success' && data.couponVOList!==[]) {
+                      for(i=0;i<data.couponVOList.length;i++){
+                        console.log(data.couponVOList[i].cardTypeName, data.couponVOList[i].amount)
+                      }
+              
+            }
+                }
+            } catch (e) {
+                reject(`⚠️ ${arguments.callee.name.toString()} API返回结果解析出错\n${e}\n${JSON.stringify(data)}`)
+            } finally {
+                resolve(data)
+            }
+        })
+    })
+}
+
+function taskurl_xh() {
+    return {
+			url: "https://mygiftcard.jd.com/giftcard/queryGiftCardItem/app?source=JDAP",
+            body: `pageNo=1&queryType=1&cardType=-1&pageSize=20`,
+            headers: {
+                'origin': 'https://mygiftcard.jd.com',
+				        'user-agent': 'jdapp;iPhone;10.1.2;15.0;ff2caa92a8529e4788a34b3d8d4df66d9573f499;network/wifi;model/iPhone13,4;addressid/2074196292;appBuild/167802;jdSupportDarkMode/1;Mozilla/5.0 (iPhone; CPU iPhone OS 15_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148;supportJDSHWK/1',
+                'referer': 'https://mygiftcard.jd.com/giftcardForM.html?source=JDAP&sid=a7ccfc6561307ec18b8594167136d89w&un_area=7_446_451_37392',
+                'cookie': cookie,
+            },
+			}
+}
+
 function getJingBeanBalanceDetail(page) {
   return new Promise(async resolve => {
     const options = {
