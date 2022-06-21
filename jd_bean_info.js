@@ -61,7 +61,7 @@ if ($.isNode()) {
         }
         continue
       }
-        await queryGiftCard()
+        if (i === 0) {await queryGiftCard()}
         await bean();
         await showMsg();
 
