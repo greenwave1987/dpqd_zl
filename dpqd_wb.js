@@ -33,21 +33,16 @@ let message=''
 let notify_dpqd = false
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 
-let PROXY_HOST ='42.6.114.120'; //例如:127.0.0.1(环境变量名:TG_PROXY_HOST)
-let PROXY_PORT ='7314'; //例如:1080(环境变量名:TG_PROXY_PORT)
-let PROXY_AUTH = ''; //tg代理配置认证参数
-
 !(async () => {
     cookiesArr = await requireConfig()
     // 获取签到token
-    //token =await readapi('50036','ae77e6c5dffb4b269117f613100f2196')
     token = await readapi1('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
     token.sort(function () { return Math.random() - 0.5})
     //console.log(token)
 
     if (nowHours==23&&nowMinutes>55){
     //执行第一步，店铺签到
-    console.log(`马上零点，等待开始*******`)
+    console.log(`即将零点，执行等待计时`)
         await waitfor()
         firststep();
     //执行第二步，为token提供者助力挖宝
@@ -63,7 +58,7 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
     //22点默认不执行，如脚本出错，会修改API再执行一次。
     }else if (nowHours==22&&nowMinutes>55){
         console.log(`等待获取该时间点是否执行命令设置*******`)
-        let emergency =await readapi('50038','21502f3b390942c3b9c4ddad7c7f9bb7')
+        let emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
         if(emergency[0].retry==1){
             console.log(`再次执行签到程序******`)
             await secondstep();
@@ -77,16 +72,18 @@ let PROXY_AUTH = ''; //tg代理配置认证参数
         await secondstep();
         await wbzl();
     } 
-    //执行第三步，发送通知,8点前不发送通知    
-    if (new Date().getHours()<6){
-        console.log('现在'+new Date().getHours()+`点,默认不推送！`)
-        if(notify_dpqd){
-            console.log(`你设置了推送，开始发送通知！`)
-            await showMsg()
-        }
-    }else{
-        await showMsg()
-        };                     
+    //执行第三步，发送通知,8点前不发送通知 
+    if (message){   
+      if (new Date().getHours()<6){
+          console.log('现在'+new Date().getHours()+`点,默认不推送！`)
+          if(notify_dpqd){
+              console.log(`你设置了推送，开始发送通知！`)
+              await showMsg()
+          }
+      }else{
+          await showMsg()
+          }
+    };                     
 })()
     .catch((e) => {
       $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
@@ -200,8 +197,7 @@ function signCollectGift(token,shopname,activity) {
 
 // 发财挖宝助力
 async function wbzl(){
-    //shareCodes = await readapi('50035','5fbed831fb4043d6968ae10ec38ee991')
-    shareCodes = await readapi1('sharecode',1,'56F2D2A7A034CFD04DBF13CB75EDEFB6')    
+    shareCodes = await readapi1('sharecode',11,'977CDD0B0AEF4A6AE9B4FEF27BDBA551')    
     //console.log(shareCodes)
     for (let [index, value] of cookiesArr.entries()) {
         try {
