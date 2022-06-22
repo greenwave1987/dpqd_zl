@@ -526,7 +526,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
 }
 //定义等待函数，如果当前分钟数大于58，则等待设定秒数
 async function waitfor(starttime = 59.85) {
-    await checkjs('./dpqdandwbzl.js','await wbzl()')
+    await checkjs('./dpqd_wb.js','await wbzl()')
 	if (new Date().Format("mm") > 58) {
         console.log(`快到整点时间，需等待约59s开始签到........`);
 		const nowtime = new Date().Format("s.S")
