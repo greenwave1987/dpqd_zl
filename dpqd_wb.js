@@ -31,6 +31,7 @@ let UserName = ''
 let res = ''
 let message=''
 let notify_dpqd = false
+let emergency
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 
 !(async () => {
@@ -58,7 +59,7 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
     //22点默认不执行，如脚本出错，会修改API再执行一次。
     }else if (nowHours==22&&nowMinutes>55){
         console.log(`等待获取该时间点是否执行命令设置*******`)
-        let emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
+        emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
         if(emergency[0].retry==1){
             console.log(`再次执行签到程序******`)
             await secondstep();
@@ -149,7 +150,7 @@ async function dpqd1(){
     await signCollect(token[j].token,token[j].activity)
     await taskUrl(token[j].token,token[j].vender,token[j].activity)
     console.log(logtemp.join('→') )
-    await $.wait(getRandomNumberByRange(10000, 30000))
+    await $.wait(getRandomNumberByRange(10000, 20000))
   }
 }
 
@@ -197,7 +198,8 @@ function signCollectGift(token,shopname,activity) {
 
 // 发财挖宝助力
 async function wbzl(){
-    shareCodes = await readapi1('sharecode',11,'977CDD0B0AEF4A6AE9B4FEF27BDBA551')    
+    shareCodes = await readapi1('sharecode',11,'977CDD0B0AEF4A6AE9B4FEF27BDBA551')
+    emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')    
     //console.log(shareCodes)
     for (let [index, value] of cookiesArr.entries()) {
         try {
@@ -207,9 +209,12 @@ async function wbzl(){
             await requestAlgo('ce6c2', 'jdltapp;')
             if (shareCodes.length === 0) {console.log('获取助力码失败');break}
             console.log('将帮提供token者助力！！！') 
-            shareCodes.sort(function () { return Math.random() - 0.5})
             let codestemp=[]
-            codestemp[0]=shareCodes[0]
+            if(Math.ceil(new Date().getDate()%2)){
+              TK_SIGN.id < emergency[2].retry ? codestemp[0]=shareCodes[0]:codestemp[0]=shareCodes[1]
+              }else{
+              TK_SIGN.id > emergency[2].retry ? codestemp[0]=shareCodes[0]:codestemp[0]=shareCodes[1]
+            }
             for (let code of codestemp) {
                 console.log(new Date().Format("hh:mm:ss.S")+' 将帮提供token者助力',code.inviter) 
                 res = await api('happyDigHelp', {
