@@ -26,6 +26,7 @@ let cookiesArr = []
 let shareCodes = []
 let token = []
 let logtemp=[]
+let codestemp=[]
 let cookie = ''
 let UserName = ''
 let res = ''
@@ -196,25 +197,49 @@ function signCollectGift(token,shopname,activity) {
   })
 }
 
+// 获取发财挖宝助力码
+async function getwbzlm(){
+    shareCodes = await readapi1('sharecode',11,'977CDD0B0AEF4A6AE9B4FEF27BDBA551')
+    emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D') 
+    if (shareCodes.length === 0) {console.log('获取助力码失败');return}   
+    if(Math.ceil(new Date().getDate()%3)===0){
+        if(TK_SIGN.id < emergency[2].retry){
+            codestemp[0]=shareCodes[0]
+        } else if(TK_SIGN.id > emergency[3].retry){
+            codestemp[0]=shareCodes[2]
+        }else{
+            codestemp[0]=shareCodes[1]
+        }
+    }else if(Math.ceil(new Date().getDate()%3)===1){
+        if(TK_SIGN.id < emergency[2].retry){
+            codestemp[0]=shareCodes[1]
+        } else if(TK_SIGN.id > emergency[3].retry){
+            codestemp[0]=shareCodes[0]
+        }else{
+            codestemp[0]=shareCodes[2]
+        }
+    }else{
+        if(TK_SIGN.id < emergency[2].retry){
+            codestemp[0]=shareCodes[2]
+        } else if(TK_SIGN.id > emergency[3].retry){
+            codestemp[0]=shareCodes[1]
+        }else{
+            codestemp[0]=shareCodes[0]
+        }
+    }
+    //console.log(shareCodes)
+}
+
 // 发财挖宝助力
 async function wbzl(){
-    shareCodes = await readapi1('sharecode',11,'977CDD0B0AEF4A6AE9B4FEF27BDBA551')
-    emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')    
-    //console.log(shareCodes)
+    await getwbzlm()
     for (let [index, value] of cookiesArr.entries()) {
         try {
             cookie = value
             UserName = decodeURIComponent(cookie.match(/pt_pin=([^;]*)/)[1])
             console.log(`\n开始【账号${index + 1}】${UserName}\n`)
             await requestAlgo('ce6c2', 'jdltapp;')
-            if (shareCodes.length === 0) {console.log('获取助力码失败');break}
             console.log('将帮提供token者助力！！！') 
-            let codestemp=[]
-            if(Math.ceil(new Date().getDate()%2)){
-              TK_SIGN.id < emergency[2].retry ? codestemp[0]=shareCodes[0]:codestemp[0]=shareCodes[1]
-              }else{
-              TK_SIGN.id > emergency[2].retry ? codestemp[0]=shareCodes[0]:codestemp[0]=shareCodes[1]
-            }
             for (let code of codestemp) {
                 console.log(new Date().Format("hh:mm:ss.S")+' 将帮提供token者助力',code.inviter) 
                 res = await api('happyDigHelp', {
