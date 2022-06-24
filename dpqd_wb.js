@@ -32,7 +32,7 @@ let UserName = ''
 let res = ''
 let message=''
 let notify_dpqd = false
-let emergency
+let emergency=[]
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 
 !(async () => {
