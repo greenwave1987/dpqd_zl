@@ -38,9 +38,9 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
 !(async () => {
     // 获取通知
     emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
-    if(emergency[3].retry!==null){
-	    console.log("紧急通知:",emergency[3].retry)
-	    message+="紧急通知:"+emergency[3].retry+"\n"
+    if(emergency[4].retry!==null){
+	    console.log("紧急通知:",emergency[4].retry)
+	    message+="紧急通知:"+emergency[4].retry+"\n"
     }
 	
     // 获取签到token
