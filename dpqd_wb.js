@@ -36,12 +36,18 @@ let emergency
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 
 !(async () => {
-    cookiesArr = await requireConfig()
+    // 获取通知
+    emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
+    if(emergency[3].retry!==null){
+	    console.log("紧急通知:",emergency[3].retry)
+	    message+="紧急通知:"+emergency[3].retry+"\n"
+    }
+	
     // 获取签到token
     token = await readapi1('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
     token.sort(function () { return Math.random() - 0.5})
     //console.log(token)
-
+    cookiesArr = await requireConfig()
     if (nowHours==23&&nowMinutes>55){
     //执行第一步，店铺签到
     console.log(`即将零点，执行等待计时`)
@@ -60,7 +66,7 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
     //22点默认不执行，如脚本出错，会修改API再执行一次。
     }else if (nowHours==22&&nowMinutes>55){
         console.log(`等待获取该时间点是否执行命令设置*******`)
-        emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
+        
         if(emergency[0].retry==1){
             console.log(`再次执行签到程序******`)
             await secondstep();
@@ -200,7 +206,6 @@ function signCollectGift(token,shopname,activity) {
 // 获取发财挖宝助力码
 async function getwbzlm(){
     shareCodes = await readapi1('sharecode',11,'977CDD0B0AEF4A6AE9B4FEF27BDBA551')
-    emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D') 
     if (shareCodes.length === 0) {console.log('获取助力码失败');return}   
     if(Math.ceil(new Date().getDate()%3)===0){
         if(TK_SIGN.id < emergency[2].retry){
