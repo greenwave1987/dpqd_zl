@@ -2,12 +2,17 @@
  * cron: 59 20,22,23 * * *
  * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。跑几个号就几个号给我助力。
  * 默认不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，能不能签到豆查询就好了，签到通知与否没关系。
- *  环境变量名称：TK_SIGN，环境变量值：{"id":*,"sign":"**********************"}
+ * 环境变量名称：TK_SIGN，环境变量值：{"id":*,"sign":"**********************"}
+ * 若用上面的环境变量报错则拆分为TK_SIGN_ID和TK_SIGN_SIGN两个变量。
 */
 
 let TK_SIGN
 if (process.env.TK_SIGN) {
 	TK_SIGN = JSON.parse(process.env.TK_SIGN)
+}
+let TK_SIGN_ID,TK_SIGN_SIGN
+if (process.env.TK_SIGN_ID&&process.env.TK_SIGN_SIGN) {
+	TK_SIGN = {id:process.env.TK_SIGN_ID,sign:process.env.TK_SIGN_SIGN}
 }
 if (!TK_SIGN) {
 	console.log('联系@dpqd_boss获取TK_SIGN.')
