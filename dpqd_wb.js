@@ -42,12 +42,13 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
 
 !(async () => {
     // 获取通知
-    emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
-    if(emergency[4].retry!=="null"){
+    if (nowHours==20&&nowMinutes>55){
+        emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
+        if(emergency[4].retry!=="null"){
 	    console.log("\n====================紧急通知====================\n",emergency[4].retry)
 	    message+="\n======紧急通知======\n"+emergency[4].retry+"\n"
+        }
     }
-	
     // 获取签到token
     token = await readapi1('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
     token.sort(function () { return Math.random() - 0.5})
@@ -55,11 +56,11 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
     cookiesArr = await requireConfig()
     if (nowHours==23&&nowMinutes>55){
     //执行第一步，店铺签到
-    console.log(`即将零点，执行等待计时`)
+        console.log(`即将零点，执行等待计时`)
         await waitfor()
         firststep();
     //执行第二步，为token提供者助力挖宝
-    console.log(new Date().Format("hh:mm:ss.S")+'等到00:01开始助力')
+        console.log(new Date().Format("hh:mm:ss.S")+'等到00:01开始助力')
         if(new Date().getMinutes()==59){
             await $.wait((120-new Date().getSeconds())*1000)
             await wbzl()
@@ -69,6 +70,7 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
         }
         else(await wbzl())	 
     //22点默认不执行，如脚本出错，会修改API再执行一次。
+    /**
     }else if (nowHours==22&&nowMinutes>55){
         console.log(`等待获取该时间点是否执行命令设置*******`)
         
@@ -80,6 +82,7 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
             console.log(`再次执行助力程序******`)
             await wbzl();
         }
+	*/
     //手动执行所有都执行一次                  
     }else{
         await secondstep();
