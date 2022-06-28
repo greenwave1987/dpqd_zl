@@ -42,13 +42,13 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
 
 !(async () => {
     // 获取通知
-    if (nowHours==20&&nowMinutes>55){
+    //if (nowHours==20&&nowMinutes>55){
         emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
         if(emergency[4].retry!=="null"){
 	    console.log("\n====================紧急通知====================\n",emergency[4].retry)
 	    message+="\n======紧急通知======\n"+emergency[4].retry+"\n"
         }
-    }
+    //}
     // 获取签到token
     token = await readapi1('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
     token.sort(function () { return Math.random() - 0.5})
