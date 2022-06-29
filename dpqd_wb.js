@@ -1,5 +1,5 @@
 /**
- * cron: 59 20,22,23 * * *
+ * cron: 59 20,23 * * *
  * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。跑几个号就几个号给我助力。
  * 默认不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，能不能签到豆查询就好了，签到通知与否没关系。
  * 环境变量名称：TK_SIGN，环境变量值：{"id":*,"sign":"**********************"}
@@ -37,23 +37,27 @@ let UserName = ''
 let res = ''
 let message=''
 let notify_dpqd = false
-let emergency
+let emergency=[]
+let apidata
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 
 !(async () => {
-    // 获取通知
-    //if (nowHours==20&&nowMinutes>55){
-        emergency = await readapi1('sharecode',10,'F8B8DF51634E20607939B0C0E607CF1D')
-        if(emergency[4].retry!=="null"){
+// 获取API接口数据
+    apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
+// 获取紧急通知
+    emergency=apidata.emergency
+    if(emergency[4].retry!=="null"){
 	    console.log("\n====================紧急通知====================\n",emergency[4].retry)
 	    message+="\n======紧急通知======\n"+emergency[4].retry+"\n"
-        }
-    //}
-    // 获取签到token
-    token = await readapi1('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
+    }
+// 获取挖宝助力码
+    shareCodes = apidata.shareCodes
+// 获取签到token
+    token = apidata.token 
     token.sort(function () { return Math.random() - 0.5})
     //console.log(token)
     cookiesArr = await requireConfig()
+// 零点签到
     if (nowHours==23&&nowMinutes>55){
     //执行第一步，店铺签到
         console.log(`即将零点，执行等待计时`)
@@ -69,44 +73,30 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
             await wbzl()
         }
         else(await wbzl())	 
-    //22点默认不执行，如脚本出错，会修改API再执行一次。
-    /**
-    }else if (nowHours==22&&nowMinutes>55){
-        console.log(`等待获取该时间点是否执行命令设置*******`)
-        
-        if(emergency[0].retry==1){
-            console.log(`再次执行签到程序******`)
-            await secondstep();
-        }
-        if(emergency[1].retry==1){
-            console.log(`再次执行助力程序******`)
-            await wbzl();
-        }
-	*/
-    //手动执行所有都执行一次                  
+//其他时段签到                  
     }else{
         await secondstep();
         await wbzl();
     } 
-    //执行第三步，发送通知,8点前不发送通知 
+//发送通知,8点前不发送通知 
     if (message){   
-      if (new Date().getHours()<6){
-          console.log('现在'+new Date().getHours()+`点,默认不推送！`)
-          if(notify_dpqd){
-              console.log(`你设置了推送，开始发送通知！`)
-              await showMsg()
-          }
-      }else{
-          await showMsg()
-          }
+        if (new Date().getHours()<6){
+            console.log('现在'+new Date().getHours()+`点,默认不推送！`)
+            if(notify_dpqd){
+                console.log(`你设置了推送，开始发送通知！`)
+                await showMsg()
+            }
+        }else{
+            await showMsg()
+        }
     };                     
 })()
-    .catch((e) => {
-      $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
-    })
-    .finally(() => {
-      $.done();
-    })
+.catch((e) => {
+    $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
+})
+.finally(() => {
+    $.done();
+})
   
 //零点店铺签到
 async function firststep(){
@@ -213,7 +203,6 @@ function signCollectGift(token,shopname,activity) {
 
 // 获取发财挖宝助力码
 async function getwbzlm(){
-    shareCodes = await readapi1('sharecode',11,'977CDD0B0AEF4A6AE9B4FEF27BDBA551')
     if (shareCodes.length === 0) {console.log('获取助力码失败');return}   
     if(Math.ceil(new Date().getDate()%3)===0){
         if(TK_SIGN.id < emergency[2].retry){
@@ -291,7 +280,8 @@ async function getvender(Id) {
     $.get(options, (err, resp, data) => {
         try {
             if (err) {
-            $.logErr(err);
+            logtemp.push('IP黑名单')
+            message += 'IP黑名单;'
             } else { 
                 logtemp.push('逛店铺')
                 message += '逛店铺;'
@@ -367,8 +357,8 @@ function taskUrl(token,venderId,activityId) {
         } else {
           //console.log(data)
           data = JSON.parse(/{(.*)}/g.exec(data)[0])
-          logtemp.push('已签'+data.data.days+'天。')
-          message +=`已签`+data.data.days+`天。\n`
+          logtemp.push('第'+data.data.days+'天。')
+          message +=`第`+data.data.days+`天。\n`
         }
       } catch (e) {
         $.logErr(e, resp);
@@ -402,28 +392,7 @@ async function api(fn, body) {
     return data
 }
 
-async function readapi(product_id,secret) {
-    let productConfig =[]
-    for (let i = 0; i < 5; i++) {
-        try {
-            let {data} = await axios.get(`${new Buffer.from('aHR0cHM6Ly93d3cubXhuenAuY29tL2FwaS9yZW1vdGVfY29uZmlnL2dldD91c2VyX2lkPW92ZGd1cXBmdXZkZ292eHMmYXBwX2lkPW92ZGd1cXBmdXZkZ292eHMmYXBwX3NlY3JldD1TM294VlhaM2JISmtjemwyZWpOSlVXOHhZV3AxZHowOQ==', 'base64').toString()}&secret=${secret}&product_id=${product_id}`)
-            if(data){
-                //console.log(data)
-                data = JSON.parse(JSON.stringify(data));
-                productConfig = JSON.parse(data.data.productConfig) || []
-                if (productConfig.length !== 0) {
-                    break
-                }else{console.log('未获取到数据！！')}
-            }
-        } catch (e) {
-            console.log(e)
-            await $.wait(getRandomNumberByRange(2000, 6000))
-        }
-    }
-    return(productConfig)
-}
-
-async function readapi1(model_name,id,sign) {
+async function readapi(model_name,id,sign) {
     let URIDATA =[]
     for (let i = 0; i < 5; i++) {
         try {
@@ -433,8 +402,9 @@ async function readapi1(model_name,id,sign) {
                 data = JSON.parse(JSON.stringify(data));
                 URIDATA = JSON.parse(data.data.data.URIDATA) || []
                 if (URIDATA !== 0) {
+                    console.log('获取数据成功！！')
                     break
-                }else{console.log('未获取到数据！！')}
+                }else{console.log('获取数据失败，重试！！')}
             }
         } catch (e) {
             console.log(e)
@@ -532,24 +502,7 @@ function getRandomNumberByRange(start, end) {
     return Math.floor(Math.random() * (end - start) + start)
 }
 // 以上都是抄来的，我也不知道干啥用的，不要瞎改就对了
-//定义agent代理函数
-async function proxy(options) {
-    //console.log(yxl.GetDateTime(new Date())+'开始设置代理')
-  if (PROXY_HOST && PROXY_PORT) {
-    const tunnel = require("tunnel");
-    const agent = {
-      https: tunnel.httpsOverHttp({
-        proxy: {
-          host: PROXY_HOST,
-          port: PROXY_PORT * 1,
-          proxyAuth: PROXY_AUTH
-        }
-      })
-    }
-    Object.assign(options, {agent})
-  }
-  //console.log(yxl.GetDateTime(new Date())+'设置代理完成')
-}
+
 //时间格式
 Date.prototype.Format = function (fmt) { //author: meizz
     var o = {
