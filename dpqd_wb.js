@@ -72,9 +72,17 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
         console.log(new Date().Format("hh:mm:ss.S")+'等到00:01开始助力')
         if(new Date().getMinutes()==59){
             await $.wait((120-new Date().getSeconds())*1000)
+	// 获取API接口数据
+            apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
+	// 获取挖宝助力码
+            shareCodes = apidata.shareCodes
             await wbzl()
         }else if(new Date().getMinutes()<1){
             await $.wait((60-new Date().getSeconds())*1000)
+	// 获取API接口数据
+            apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
+	// 获取挖宝助力码
+            shareCodes = apidata.shareCodes
             await wbzl()
         }
         else(await wbzl())	 
