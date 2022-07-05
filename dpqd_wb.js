@@ -28,10 +28,11 @@ const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
 let nowHours = new Date().getHours()
 let nowMinutes = new Date().getMinutes()
 let cookiesArr = []
-let shareCodes = []
+let fcwb = []
 let token = []
 let logtemp=[]
 let codestemp=[]
+let wblimits
 let cookie = ''
 let UserName = ''
 let res = ''
@@ -40,25 +41,38 @@ let notify_dpqd = false
 let emergency=[]
 let apidata
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
-
+//时间格式
+Date.prototype.Format = function (fmt) { //author: meizz
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1
+        .length));
+    for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length ==
+            1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
 !(async () => {
-    if (nowHours==22&&nowMinutes>55){
-        console.log("说你就不听，不删掉任务再拉库！")
-        message+="说你就不听，不删掉任务再拉库！"
-        process.exit(0)
-        }
 // 获取API接口数据
     apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
 // 获取紧急通知
-    emergency=apidata.emergency
-    if(emergency[4].retry!=="null"){
-	    console.log("\n====================紧急通知====================\n",emergency[4].retry)
-	    message+="\n======紧急通知======\n"+emergency[4].retry+"\n"
+    emergency=apidata.notify
+    if(emergency!=="null"){
+	    console.log("\n====================通知====================\n",emergency)
+	    message+="\n======通知======\n"+emergency+"\n"
     }
 // 获取挖宝助力码
-    shareCodes = apidata.shareCodes
+    fcwb = JSON.parse(apidata.fcwb)
+// 获取挖宝助力分组
+    wblimits = JSON.parse(apidata.wblimits)
 // 获取签到token
-    token = apidata.token 
+    token = JSON.parse(apidata.dpqd)
     token.sort(function () { return Math.random() - 0.5})
     //console.log(token)
     cookiesArr = await requireConfig()
@@ -75,14 +89,14 @@ if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签�
 	// 获取API接口数据
             apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
 	// 获取挖宝助力码
-            shareCodes = apidata.shareCodes
+            fcwb = JSON.parse(apidata.fcwb)
             await wbzl()
         }else if(new Date().getMinutes()<1){
             await $.wait((60-new Date().getSeconds())*1000)
 	// 获取API接口数据
             apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
 	// 获取挖宝助力码
-            shareCodes = apidata.shareCodes
+            fcwb = JSON.parse(apidata.fcwb)
             await wbzl()
         }
         else(await wbzl())	 
@@ -216,33 +230,33 @@ function signCollectGift(token,shopname,activity) {
 
 // 获取发财挖宝助力码
 async function getwbzlm(){
-    if (shareCodes.length === 0) {console.log('获取助力码失败');return}   
+    if (fcwb.length === 0) {console.log('获取助力码失败');return}
     if(Math.ceil(new Date().getDate()%3)===0){
-        if(TK_SIGN.id < emergency[2].retry){
-            codestemp[0]=shareCodes[0]
-        } else if(TK_SIGN.id > emergency[3].retry){
-            codestemp[0]=shareCodes[2]
+        if(TK_SIGN.id < wblimits.one){
+            codestemp[0]=fcwb[0]
+        } else if(TK_SIGN.id > wblimits.two){
+            codestemp[0]=fcwb[2]
         }else{
-            codestemp[0]=shareCodes[1]
+            codestemp[0]=fcwb[1]
         }
     }else if(Math.ceil(new Date().getDate()%3)===1){
-        if(TK_SIGN.id < emergency[2].retry){
-            codestemp[0]=shareCodes[1]
-        } else if(TK_SIGN.id > emergency[3].retry){
-            codestemp[0]=shareCodes[0]
+        if(TK_SIGN.id < wblimits.one){
+            codestemp[0]=fcwb[1]
+        } else if(TK_SIGN.id > wblimits.two){
+            codestemp[0]=fcwb[0]
         }else{
-            codestemp[0]=shareCodes[2]
+            codestemp[0]=fcwb[2]
         }
     }else{
-        if(TK_SIGN.id < emergency[2].retry){
-            codestemp[0]=shareCodes[2]
-        } else if(TK_SIGN.id > emergency[3].retry){
-            codestemp[0]=shareCodes[1]
+        if(TK_SIGN.id < wblimits.one){
+            codestemp[0]=fcwb[2]
+        } else if(TK_SIGN.id > wblimits.two){
+            codestemp[0]=fcwb[1]
         }else{
-            codestemp[0]=shareCodes[0]
+            codestemp[0]=fcwb[0]
         }
     }
-    //console.log(shareCodes)
+    //console.log('助力分组',wblimits.one+'-'+TK_SIGN.id+'-'+wblimits.two+'-'+Math.ceil(new Date().getDate()%3)+'-'+codestemp[0].inviter)
 }
 
 // 发财挖宝助力
@@ -406,25 +420,25 @@ async function api(fn, body) {
 }
 
 async function readapi(model_name,id,sign) {
-    let URIDATA =[]
+    let datatemp
+    await $.wait(id*200)
     for (let i = 0; i < 5; i++) {
         try {
             let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vYXBpL0FwcC9UYWJsZS9HZXQ/YXBwX2tleT0wNkU2MjhGQzIyMzM2NkU2MEIxQTUzRjAxMkMxRTc2OA==', 'base64').toString()}&model_name=${model_name}&id=${id}&sign=${sign}`)
-            if(data.ret===200){
+            if (data.ret===200&data.data.err_code===0) {
                 //console.log(data)
-                data = JSON.parse(JSON.stringify(data));
-                URIDATA = JSON.parse(data.data.data.URIDATA) || []
-                if (URIDATA !== 0) {
-                    console.log('获取数据成功！！')
-                    break
-                }else{console.log('获取数据失败，重试！！')}
+                datatemp = JSON.parse(JSON.stringify(data.data.data));
+                console.log('获取数据成功！！')
+                break
+            }else{
+		console.log('获取数据失败，重试！！')
             }
         } catch (e) {
             console.log(e)
             await $.wait(getRandomNumberByRange(1000, 4000))
         }
     }
-    return(URIDATA)
+    return(datatemp)
 }
 
 async function requireConfig(check = false) {
@@ -516,23 +530,7 @@ function getRandomNumberByRange(start, end) {
 }
 // 以上都是抄来的，我也不知道干啥用的，不要瞎改就对了
 
-//时间格式
-Date.prototype.Format = function (fmt) { //author: meizz
-    var o = {
-        "M+": this.getMonth() + 1, //月份
-        "d+": this.getDate(), //日
-        "h+": this.getHours(), //小时
-        "m+": this.getMinutes(), //分
-        "s+": this.getSeconds(), //秒
-        "S": this.getMilliseconds() //毫秒
-    };
-    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1
-        .length));
-    for (var k in o)
-        if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length ==
-            1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-    return fmt;
-}
+
 //定义等待函数，如果当前分钟数大于58，则等待设定秒数
 async function waitfor(starttime = 59.85) {
     await checkjs('./dpqd_wb.js','await wbzl()')
