@@ -287,7 +287,7 @@ async function wbzl(){
                 }   
             }
         } catch (e) {
-            console.log('error', e)
+            console.log('error', '助力失败！')
         }
     } 
 }
