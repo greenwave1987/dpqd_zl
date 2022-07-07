@@ -421,7 +421,7 @@ async function api(fn, body) {
 
 async function readapi(model_name,id,sign) {
     let datatemp
-    await $.wait(id*200)
+    await $.wait(id*100)
     for (let i = 0; i < 5; i++) {
         try {
             let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vYXBpL0FwcC9UYWJsZS9HZXQ/YXBwX2tleT0wNkU2MjhGQzIyMzM2NkU2MEIxQTUzRjAxMkMxRTc2OA==', 'base64').toString()}&model_name=${model_name}&id=${id}&sign=${sign}`)
