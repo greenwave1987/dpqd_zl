@@ -1,5 +1,5 @@
 /**
- * cron: 59 20,23 * * *
+ * cron: 59 20,23 * * *定时可以增加，不要取消23:59分那次，否则啥都签不到。青龙配置文件随机延迟取消。
  * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。跑几个号就几个号给我助力。
  * 默认不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，能不能签到豆查询就好了，签到通知与否没关系。
  * 环境变量名称：TK_SIGN，环境变量值：{"id":*,"sign":"**********************"}
@@ -232,25 +232,25 @@ function signCollectGift(token,shopname,activity) {
 async function getwbzlm(){
     if (fcwb.length === 0) {console.log('获取助力码失败');return}
     if(Math.ceil(new Date().getDate()%3)===0){
-        if(TK_SIGN.id < wblimits.one){
+        if(TK_SIGN.id-0 < wblimits.one-0){
             codestemp[0]=fcwb[0]
-        } else if(TK_SIGN.id > wblimits.two){
+        } else if(TK_SIGN.id-0 > wblimits.two-0){
             codestemp[0]=fcwb[2]
         }else{
             codestemp[0]=fcwb[1]
         }
     }else if(Math.ceil(new Date().getDate()%3)===1){
-        if(TK_SIGN.id < wblimits.one){
+        if(TK_SIGN.id-0 < wblimits.one-0){
             codestemp[0]=fcwb[1]
-        } else if(TK_SIGN.id > wblimits.two){
+        } else if(TK_SIGN.id-0 > wblimits.two-0){
             codestemp[0]=fcwb[0]
         }else{
             codestemp[0]=fcwb[2]
         }
     }else{
-        if(TK_SIGN.id < wblimits.one){
+        if(TK_SIGN.id-0 < wblimits.one-0){
             codestemp[0]=fcwb[2]
-        } else if(TK_SIGN.id > wblimits.two){
+        } else if(TK_SIGN.id-0 > wblimits.two-0){
             codestemp[0]=fcwb[1]
         }else{
             codestemp[0]=fcwb[0]
@@ -421,7 +421,7 @@ async function api(fn, body) {
 
 async function readapi(model_name,id,sign) {
     let datatemp
-    await $.wait(id*100)
+    await $.wait(id*50)
     for (let i = 0; i < 5; i++) {
         try {
             let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vYXBpL0FwcC9UYWJsZS9HZXQ/YXBwX2tleT0wNkU2MjhGQzIyMzM2NkU2MEIxQTUzRjAxMkMxRTc2OA==', 'base64').toString()}&model_name=${model_name}&id=${id}&sign=${sign}`)
