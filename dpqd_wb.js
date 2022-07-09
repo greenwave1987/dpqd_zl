@@ -40,6 +40,7 @@ let message=''
 let notify_dpqd = false
 let emergency=[]
 let apidata
+let control
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 //时间格式
 Date.prototype.Format = function (fmt) { //author: meizz
@@ -67,6 +68,14 @@ Date.prototype.Format = function (fmt) { //author: meizz
 	    console.log("\n====================通知====================\n",emergency)
 	    message+="\n======通知======\n"+emergency+"\n"
     }
+// 获取控制参数
+    control = JSON.parse(apidata.control)
+    if(control.qd==="off"){
+        console.log("\n店铺签到暂停！！")
+    }
+    if(control.zl==="off"){
+        console.log("\n挖宝助力暂停！！")
+    }
 // 获取挖宝助力码
     fcwb = JSON.parse(apidata.fcwb)
 // 获取挖宝助力分组
@@ -78,32 +87,37 @@ Date.prototype.Format = function (fmt) { //author: meizz
     cookiesArr = await requireConfig()
 // 零点签到
     if (nowHours==23&&nowMinutes>55){
-    //执行第一步，店铺签到
-        console.log(`即将零点，执行等待计时`)
-        await waitfor()
-        firststep();
-    //执行第二步，为token提供者助力挖宝
-        console.log(new Date().Format("hh:mm:ss.S")+'等到00:01开始助力')
-        if(new Date().getMinutes()==59){
-            await $.wait((120-new Date().getSeconds())*1000)
-	// 获取API接口数据
-            apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
-	// 获取挖宝助力码
-            fcwb = JSON.parse(apidata.fcwb)
-            await wbzl()
-        }else if(new Date().getMinutes()<1){
-            await $.wait((60-new Date().getSeconds())*1000)
-	// 获取API接口数据
-            apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
-	// 获取挖宝助力码
-            fcwb = JSON.parse(apidata.fcwb)
-            await wbzl()
+        if(control.qd==="on"){
+        //执行第一步，店铺签到
+            console.log(`即将零点，执行等待计时`)
+            await waitfor()
+            firststep();
         }
-        else(await wbzl())	 
+        if(control.zl==="on"){
+        //执行第二步，为token提供者助力挖宝
+            console.log(new Date().Format("hh:mm:ss.S")+'等到00:01开始助力')
+            if(new Date().getMinutes()==59){
+                await $.wait((120-new Date().getSeconds())*1000)
+        // 获取API接口数据
+                apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
+        // 获取挖宝助力码
+                fcwb = JSON.parse(apidata.fcwb)
+                await wbzl()
+            }else if(new Date().getMinutes()<1){
+                await $.wait((60-new Date().getSeconds())*1000)
+        // 获取API接口数据
+                apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
+        // 获取挖宝助力码
+                fcwb = JSON.parse(apidata.fcwb)
+                await wbzl()
+            }else{
+                await wbzl()
+            } 
+        }
 //其他时段签到                  
     }else{
-        await secondstep();
-        await wbzl();
+        if(control.qd==="on"){await secondstep()};
+        if(control.zl==="on"){await wbzl()};
     } 
 //发送通知,8点前不发送通知 
     if (message){   
@@ -116,7 +130,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
         }else{
             await showMsg()
         }
-    };                     
+    };                      
 })()
 .catch((e) => {
     $.log('', `❌ ${$.name}, 失败! 原因: ${e}!`, '')
