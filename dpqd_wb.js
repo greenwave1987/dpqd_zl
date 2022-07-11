@@ -306,15 +306,15 @@ async function wbzl(){
                 if (res.code === 0) {
                     console.log('助力成功')
 		    await count(TK_SIGN.id,'helptimes')
-                    await $.wait(getRandomNumberByRange(5000, 10000))
+                    await $.wait(getRandomNumberByRange(30000, 60000))
                     break
                 } else if (res.code === 16144) {
                     console.log('上限')
-                    await $.wait(getRandomNumberByRange(5000, 10000))
+                    await $.wait(getRandomNumberByRange(30000, 60000))
                     break
                 } else {
                     console.log(res.code, res.errMsg)
-                    await $.wait(getRandomNumberByRange(5000, 10000))
+                    await $.wait(getRandomNumberByRange(30000, 60000))
                 }   
             }
         } catch (e) {
@@ -469,8 +469,8 @@ async function readapi(model_name,id,sign) {
             await $.wait(getRandomNumberByRange(1000, 4000))
         }
     }
-    return(datatemp)
     await count(TK_SIGN.id,'requesttimes')
+    return(datatemp)
 }
 async function count(id,field) {
     for (let i = 0; i < 5; i++) {
@@ -478,7 +478,6 @@ async function count(id,field) {
             let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vPyZzPUFwcC5UYWJsZS5DaGFuZ2VOdW1iZXIuaHRtbCZhcHBfa2V5PTA2RTYyOEZDMjIzMzY2RTYwQjFBNTNGMDEyQzFFNzY4Jm1vZGVsX25hbWU9VE9LRU4mY2hhbmdlX3ZhbHVlPTE=', 'base64').toString()}&id=${id}&change_field=${field}`)
             if (data.ret===200&data.data.err_code===0) {
                 //console.log(data)
-                datatemp = JSON.parse(JSON.stringify(data.data.data));
                 console.log(field+':'+data.data.after_value)
                 break
             }else{
