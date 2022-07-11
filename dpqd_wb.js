@@ -97,27 +97,39 @@ Date.prototype.Format = function (fmt) { //author: meizz
         //执行第二步，为token提供者助力挖宝
             console.log(new Date().Format("hh:mm:ss.S")+'等到00:01开始助力')
             if(new Date().getMinutes()==59){
-                await $.wait((120-new Date().getSeconds())*1000)
+                await $.wait((getRandomNumberByRange(120, 200)-new Date().getSeconds())*1000)
         // 获取API接口数据
                 apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
         // 获取挖宝助力码
                 fcwb = JSON.parse(apidata.fcwb)
                 await wbzl()
+		await $.wait(getRandomNumberByRange(300000, 600000))
+		await wbzl()
             }else if(new Date().getMinutes()<1){
-                await $.wait((60-new Date().getSeconds())*1000)
+                await $.wait((getRandomNumberByRange(50, 100)-new Date().getSeconds())*1000)
         // 获取API接口数据
                 apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
         // 获取挖宝助力码
                 fcwb = JSON.parse(apidata.fcwb)
                 await wbzl()
+		await $.wait(getRandomNumberByRange(300000, 600000))
+		await wbzl()
             }else{
                 await wbzl()
+		await $.wait(getRandomNumberByRange(300000, 600000))
+		await wbzl()
             } 
         }
 //其他时段签到                  
     }else{
-        if(control.qd==="on"){await secondstep()};
-        if(control.zl==="on"){await wbzl()};
+        if(control.qd==="on"){
+		await secondstep()
+	}
+        if(control.zl==="on"){
+		await wbzl()
+		await $.wait(getRandomNumberByRange(300000, 600000))
+		await wbzl()
+	}
     } 
 //发送通知,8点前不发送通知 
     if (message){   
@@ -245,30 +257,34 @@ function signCollectGift(token,shopname,activity) {
 // 获取发财挖宝助力码
 async function getwbzlm(){
     if (fcwb.length === 0) {console.log('获取助力码失败');return}
-    if(Math.ceil(new Date().getDate()%3)===0){
-        if(TK_SIGN.id-0 < wblimits.one-0){
-            codestemp[0]=fcwb[0]
-        } else if(TK_SIGN.id-0 > wblimits.two-0){
-            codestemp[0]=fcwb[2]
+    if(wblimits.three==='plantA'){
+        if(Math.ceil(new Date().getDate()%3)===0){
+            if(TK_SIGN.id-0 < wblimits.one-0){
+                codestemp[0]=fcwb[0]
+            } else if(TK_SIGN.id-0 > wblimits.two-0){
+                codestemp[0]=fcwb[2]
+            }else{
+                codestemp[0]=fcwb[1]
+            }
+        }else if(Math.ceil(new Date().getDate()%3)===1){
+            if(TK_SIGN.id-0 < wblimits.one-0){
+                codestemp[0]=fcwb[1]
+            } else if(TK_SIGN.id-0 > wblimits.two-0){
+                codestemp[0]=fcwb[0]
+            }else{
+                codestemp[0]=fcwb[2]
+            }
         }else{
-            codestemp[0]=fcwb[1]
+            if(TK_SIGN.id-0 < wblimits.one-0){
+                codestemp[0]=fcwb[2]
+            } else if(TK_SIGN.id-0 > wblimits.two-0){
+                codestemp[0]=fcwb[1]
+            }else{
+                codestemp[0]=fcwb[0]
+            }
         }
-    }else if(Math.ceil(new Date().getDate()%3)===1){
-        if(TK_SIGN.id-0 < wblimits.one-0){
-            codestemp[0]=fcwb[1]
-        } else if(TK_SIGN.id-0 > wblimits.two-0){
-            codestemp[0]=fcwb[0]
-        }else{
-            codestemp[0]=fcwb[2]
-        }
-    }else{
-        if(TK_SIGN.id-0 < wblimits.one-0){
-            codestemp[0]=fcwb[2]
-        } else if(TK_SIGN.id-0 > wblimits.two-0){
-            codestemp[0]=fcwb[1]
-        }else{
-            codestemp[0]=fcwb[0]
-        }
+    }else if(wblimits.three==='plantB'){
+	    codestemp=fcwb
     }
     //console.log('助力分组',wblimits.one+'-'+TK_SIGN.id+'-'+wblimits.two+'-'+Math.ceil(new Date().getDate()%3)+'-'+codestemp[0].inviter)
 }
@@ -289,15 +305,15 @@ async function wbzl(){
                     "linkId": "pTTvJeSTrpthgk9ASBVGsw","inviter": code.inviter,"inviteCode": code.inviteCode})
                 if (res.code === 0) {
                     console.log('助力成功')
-                    await $.wait(2000)
+                    await $.wait(getRandomNumberByRange(5000, 10000))
                     break
                 } else if (res.code === 16144) {
                     console.log('上限')
-                    await $.wait(2000)
+                    await $.wait(getRandomNumberByRange(5000, 10000))
                     break
                 } else {
                     console.log(res.code, res.errMsg)
-                    await $.wait(2000)
+                    await $.wait(getRandomNumberByRange(5000, 10000))
                 }   
             }
         } catch (e) {
