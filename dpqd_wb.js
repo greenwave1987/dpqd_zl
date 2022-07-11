@@ -82,7 +82,6 @@ Date.prototype.Format = function (fmt) { //author: meizz
     wblimits = JSON.parse(apidata.wblimits)
 // 获取签到token
     token = JSON.parse(apidata.dpqd)
-    token.sort(function () { return Math.random() - 0.5})
     //console.log(token)
     cookiesArr = await requireConfig()
 // 零点签到
@@ -199,6 +198,7 @@ async function dpqd(){
 }
 //零点之后签到
 async function dpqd1(){
+  token.sort(function () { return Math.random() - 0.5})
   for (var j = 0; j < token.length; j++) {
     logtemp=[]
     getUA()
