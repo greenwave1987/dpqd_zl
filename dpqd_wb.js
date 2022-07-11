@@ -312,6 +312,10 @@ async function wbzl(){
                     console.log('上限')
                     await $.wait(getRandomNumberByRange(3000, 10000))
                     break
+		} else if (res.code === 16143) {
+                    console.log('已经邀请过')
+                    await $.wait(getRandomNumberByRange(3000, 10000))
+                    break	 
                 } else {
                     await $.wait(getRandomNumberByRange(40000, 60000))
                 }   
