@@ -306,15 +306,14 @@ async function wbzl(){
                 if (res.code === 0) {
                     console.log('助力成功')
 		    await count(TK_SIGN.id,'helptimes')
-                    await $.wait(getRandomNumberByRange(30000, 60000))
+                    await $.wait(getRandomNumberByRange(3000, 10000))
                     break
                 } else if (res.code === 16144) {
                     console.log('上限')
-                    await $.wait(getRandomNumberByRange(30000, 60000))
+                    await $.wait(getRandomNumberByRange(3000, 10000))
                     break
                 } else {
-                    console.log(res.code, res.errMsg)
-                    await $.wait(getRandomNumberByRange(30000, 60000))
+                    await $.wait(getRandomNumberByRange(40000, 60000))
                 }   
             }
         } catch (e) {
