@@ -297,6 +297,7 @@ async function wbzl(){
             cookie = value
             UserName = decodeURIComponent(cookie.match(/pt_pin=([^;]*)/)[1])
             console.log(`\n开始【账号${index + 1}】${UserName}\n`)
+	    await count(TK_SIGN.id,'totalhelptimes')
             await requestAlgo('ce6c2', 'jdltapp;')
             console.log('将帮提供token者助力！！！') 
             for (let code of codestemp) {
