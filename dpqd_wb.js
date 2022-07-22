@@ -19,7 +19,7 @@ if (!TK_SIGN) {
 	console.log('联系@dpqd_boss获取TK_SIGN.')
 	return
 }
-const $ = new Env('店铺签到(含挖宝助力）');
+const $ = new Env('店铺签到(需手动助力挖宝）');
 const axios = require('axios')
 const {SHA256} = require('crypto-js')
 const CryptoJS = require('crypto-js')
@@ -38,7 +38,7 @@ let cookie = ''
 let UserName = ''
 let res = ''
 let message=''
-let notify_dpqd = false
+let notify_dpqd = true
 let emergency=[]
 let apidata
 let control
