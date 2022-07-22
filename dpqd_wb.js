@@ -65,9 +65,12 @@ Date.prototype.Format = function (fmt) { //author: meizz
     apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
 // 获取紧急通知
     emergency=apidata.notify
-    if(emergency!=="null"){
+    if(nowHours>0&&emergency!=="null"){
 	    console.log("\n====================通知====================\n",emergency)
 	    message+="\n======通知======\n"+emergency+"\n"
+	    await showMsg()
+    }else{
+	    emernotify()
     }
 // 获取控制参数
     control = JSON.parse(apidata.control)
@@ -150,7 +153,21 @@ Date.prototype.Format = function (fmt) { //author: meizz
 .finally(() => {
     $.done();
 })
-  
+//零点通知发财挖宝
+async function emernotify(){
+	if(new Date().getHours()===23){
+                await $.wait((getRandomNumberByRange(120, 200)-new Date().getSeconds())*1000)
+		}
+// 获取API接口数据
+    apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign) 
+// 获取紧急通知
+    emergency=apidata.notify
+    if(emergency!=="null"){
+	    console.log("\n====================通知====================\n",emergency)
+	    message+="\n======通知======\n"+emergency+"\n"
+        await showMsg()
+    }
+}  
 //零点店铺签到
 async function firststep(){
     //按用户顺序签到
