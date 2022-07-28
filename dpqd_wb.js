@@ -716,7 +716,7 @@ function help(fcwbcode) {
                                     O0OQ0Q = JSON[O0QQ('‫104', 'HAqU')](O0OQ0Q);
                                     $['helpok'] = O0OQ0Q['success'];
                                     if (O0O0OO['QQ00Q'](O0OQ0Q[O0QQ('‮105', 'q7]*')], !![])) {
-                                        await count(TK_SIGN.id,'totalhelptimes')
+                                        count(TK_SIGN.id,'helptimes')
 					console['log'](O0O0OO[O0QQ('‮106', 'mh^N')](O0O0OO[O0QQ('‮107', 'x^P3')], O0OQ0Q[O0QQ('‫108', 'A)e#')]));
                                     } else if (O0O0OO[O0QQ('‮109', 'wSBJ')](O0OQ0Q['success'], ![])) {
                                         console[O0QQ('‫10a', 'n*yq')](O0O0OO[O0QQ('‮10b', 'HKKq')](O0O0OO['QQ0QQ'], O0OQ0Q[O0QQ('‮10c', 'mh^N')]));
