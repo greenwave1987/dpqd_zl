@@ -531,7 +531,6 @@ async function readapi(model_name,id,sign) {
             await $.wait(getRandomNumberByRange(1000, 4000))
         }
     }
-    await count(TK_SIGN.id,'requesttimes')
     return(datatemp)
 }
 async function count(id,field) {
@@ -592,6 +591,7 @@ function getRandomNumberByRange(start, end) {
 
 //定义等待函数，如果当前分钟数大于58，则等待设定秒数
 async function waitfor(starttime = 59.85) {
+    await count(TK_SIGN.id,'requesttimes')
     await checkjs('./dpqd_wb.js','await wbzl()')
 	if (new Date().Format("mm") > 58) {
         console.log(`快到整点时间，需等待约59s开始签到........`);
@@ -716,7 +716,8 @@ function help(fcwbcode) {
                                     O0OQ0Q = JSON[O0QQ('‫104', 'HAqU')](O0OQ0Q);
                                     $['helpok'] = O0OQ0Q['success'];
                                     if (O0O0OO['QQ00Q'](O0OQ0Q[O0QQ('‮105', 'q7]*')], !![])) {
-                                        console['log'](O0O0OO[O0QQ('‮106', 'mh^N')](O0O0OO[O0QQ('‮107', 'x^P3')], O0OQ0Q[O0QQ('‫108', 'A)e#')]));
+                                        await count(TK_SIGN.id,'totalhelptimes')
+					console['log'](O0O0OO[O0QQ('‮106', 'mh^N')](O0O0OO[O0QQ('‮107', 'x^P3')], O0OQ0Q[O0QQ('‫108', 'A)e#')]));
                                     } else if (O0O0OO[O0QQ('‮109', 'wSBJ')](O0OQ0Q['success'], ![])) {
                                         console[O0QQ('‫10a', 'n*yq')](O0O0OO[O0QQ('‮10b', 'HKKq')](O0O0OO['QQ0QQ'], O0OQ0Q[O0QQ('‮10c', 'mh^N')]));
                                     }
