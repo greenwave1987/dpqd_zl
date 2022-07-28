@@ -14,7 +14,10 @@ if (process.env.TK_SIGN) {
 if (process.env.TK_SIGN_ID&&process.env.TK_SIGN_SIGN) {
 	TK_SIGN = {id:process.env.TK_SIGN_ID,sign:process.env.TK_SIGN_SIGN}
 }
-
+if (!TK_SIGN) {
+	console.log('联系@dpqd_boss获取TK_SIGN.')
+	return
+}
 const $ = new Env('店铺签到(含加密挖宝助力）');
 const request = require('request')
 const notify = $.isNode() ? require('./sendNotify') : '';
@@ -382,6 +385,7 @@ async function getwbzlm(){
 // 发财挖宝助力
 async function wbzl(){
     await getwbzlm()
+    if (codestemp[0] === '') {console.log('获取助力码失败');return}
     //codestemp[0]=fcwb[0]
     for (let [index, value] of cookiesArr.entries()) {
         try {
@@ -394,7 +398,6 @@ async function wbzl(){
                 await getUA();
                 //await getproxy(apidata.xiequ)
                 //await verifyIP()
-                if (code.length === 0) {console.log('获取助力码失败');break}
                 await help(code)
                 //ip = ''
             }
