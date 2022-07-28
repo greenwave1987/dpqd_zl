@@ -371,15 +371,15 @@ async function getwbzlm(){
             }
         }
     }else if(wblimits.three==='plantB'){
-	    codestemp=fcwb
+	    codestemp[0]=fcwb[0]
     }
     //console.log('助力分组',wblimits.one+'-'+TK_SIGN.id+'-'+wblimits.two+'-'+Math.ceil(new Date().getDate()%3)+'-'+codestemp[0].inviter)
 }
 
 // 发财挖宝助力
 async function wbzl(){
-    //await getwbzlm()
-    codestemp[0]=fcwb[0]
+    await getwbzlm()
+    //codestemp[0]=fcwb[0]
     for (let [index, value] of cookiesArr.entries()) {
         try {
             cookie = value
