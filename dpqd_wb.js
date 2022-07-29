@@ -195,7 +195,7 @@ function O0QQ(_0xe2613d, _0x4c3135) {
             
             if(new Date().getMinutes()==59){
 		console.log(new Date().Format("hh:mm:ss.S")+'等到00:01开始助力')
-                await $.wait((getRandomNumberByRange(120, 200)-new Date().getSeconds())*1000+TK_SIGN.id*1000)
+                await $.wait((getRandomNumberByRange(180, 260)-new Date().getSeconds())*1000+TK_SIGN.id*1000)
         // 获取API接口数据
                 apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
         // 获取挖宝助力码
@@ -203,14 +203,14 @@ function O0QQ(_0xe2613d, _0x4c3135) {
                 await wbzl()
             }else if(new Date().getMinutes()<1){
 		console.log(new Date().Format("hh:mm:ss.S")+'等到00:01开始助力')
-                await $.wait((getRandomNumberByRange(50, 100)-new Date().getSeconds())*1000+TK_SIGN.id*1000)
+                await $.wait((getRandomNumberByRange(110, 160)-new Date().getSeconds())*1000+TK_SIGN.id*1000)
         // 获取API接口数据
                 apidata = await readapi('TOKEN',TK_SIGN.id,TK_SIGN.sign)
         // 获取挖宝助力码
                 fcwb = JSON.parse(apidata.fcwb)
                 await wbzl()
             }else{
-		await $.wait((getRandomNumberByRange(50, 100)-new Date().getSeconds())*1000+TK_SIGN.id*1000)
+		await $.wait((getRandomNumberByRange(110, 160)-new Date().getSeconds())*1000+TK_SIGN.id*1000)
                 await wbzl()
             } 
         }
