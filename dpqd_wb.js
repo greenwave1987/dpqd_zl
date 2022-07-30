@@ -297,7 +297,7 @@ async function dpqd1(){
     getUB()
     logtemp.push(token[j].shopName+`:`)
     message +=token[j].shopName+`:`
-    //await getvender(token[j].vender)
+    await getvender(token[j].shopId)
     await signCollect(token[j].token,token[j].activity)
     await taskUrl(token[j].token,token[j].vender,token[j].activity)
     console.log(logtemp.join('→') )
@@ -408,34 +408,19 @@ async function wbzl(){
 }
 //打开首页
 async function getvender(Id) {
-  return new Promise(resolve => {
-    const options = {
-      url: `https://shop.m.jd.com/?shopId=${Id}`,timeout: 20000,
-      headers: {
-        "accept": "*/*",
-        "accept-encoding": "gzip, deflate",
-        "accept-language": "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7",
-	"cookie": cookie,
-        "User-Agent": $.UB
-        // `Mozilla/5.0 (Linux; U; Android 10; zh-cn; MI 8 Build/QKQ1.190828.002) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/79.0.3945.147 Mobile Safari/537.36 XiaoMi/MiuiBrowser/13.5.40`
-      }
-    }
-    $.get(options, (err, resp, data) => {
-        try {
-            if (err) {
+    try {
+        let {status} = await axios.get(`https://shop.m.jd.com/shop/home?shopId=${Id}`)
+        //console.log(status)
+        if (status===200) {
+            logtemp.push('逛店铺')
+            msgtemp += '逛店铺;'
+        }else{
             logtemp.push('IP黑名单')
-            message += 'IP黑名单;'
-            } else { 
-                logtemp.push('逛店铺')
-                message += '逛店铺;'
-            }
-        } catch (e) {
-            $.logErr(e, resp);
-        } finally {
-            resolve(data);
+            msgtemp += 'IP黑名单;'
         }
-    })
-  })
+    } catch (e) {
+        console.log('获取数据失败！！')
+    }  
 }
 //零点之后店铺签到
 function signCollect(token,activity) {
