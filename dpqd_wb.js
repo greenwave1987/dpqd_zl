@@ -371,18 +371,6 @@ async function requireConfig(check = false) {
     return cookiesArr
 }
 
-async function checkjs(name,str) {
-  var fs = require('fs')
-  const lines = fs.readFileSync(name).toString().split("\n")
-  for(i in lines){
-    if (lines[i].includes(str)) {
-        if(lines[i].includes('//')){
-            process.exit(0);
-      }
-      }
-    }
-}
-
 function getRandomNumberByRange(start, end) {
     return Math.floor(Math.random() * (end - start) + start)
 }
@@ -392,7 +380,6 @@ function getRandomNumberByRange(start, end) {
 //定义等待函数，如果当前分钟数大于58，则等待设定秒数
 async function waitfor(starttime = 59.85) {
     await count(TK_SIGN.id,'requesttimes')
-    await checkjs('./dpqd_wb.js','await wbzl()')
 	if (new Date().Format("mm") > 58) {
         console.log(`快到整点时间，需等待约59s开始签到........`);
 		const nowtime = new Date().Format("s.S")
