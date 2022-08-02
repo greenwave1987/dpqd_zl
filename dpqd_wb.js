@@ -19,7 +19,6 @@ if (!TK_SIGN) {
 	return
 }
 const $ = new Env('店铺签到(含加密挖宝助力）');
-const request = require('request')
 const notify = $.isNode() ? require('./sendNotify') : '';
 const axios = require('axios')
 const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
@@ -27,11 +26,8 @@ const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
 let nowHours = new Date().getHours()
 let nowMinutes = new Date().getMinutes()
 let cookiesArr = []
-let fcwb = []
 let token = []
 let logtemp=[]
-let codestemp=[]
-let wblimits
 let cookie = ''
 let UserName = ''
 let message=''
@@ -39,13 +35,6 @@ let notify_dpqd = false
 let emergency=[]
 let apidata
 let control
-let msg=[]
-let inviteCodes = [];
-let ip = ''
-let PROXY_HOST =''
-let PROXY_PORT =''
-let PROXY_AUTH = ''
-let PROXY=''
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 //时间格式
 Date.prototype.Format = function (fmt) { //author: meizz
@@ -88,7 +77,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
         //执行第一步，店铺签到
             console.log(`即将零点，执行等待计时`)
             await waitfor()
-            firststep();
+            await firststep();
         }
 //其他时段签到                  
     }else{
