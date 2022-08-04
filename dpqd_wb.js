@@ -216,10 +216,10 @@ async function getvender(Id) {
         //console.log(status)
         if (status===200) {
             logtemp.push('逛店铺')
-            msgtemp += '逛店铺;'
+            message += '逛店铺;'
         }else{
             logtemp.push('IP黑名单')
-            msgtemp += 'IP黑名单;'
+            message += 'IP黑名单;'
         }
     } catch (e) {
         console.log('打开首页失败！！')
