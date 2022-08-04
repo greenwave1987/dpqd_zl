@@ -302,6 +302,7 @@ function taskUrl(token,venderId,activityId) {
 
 // 以下都是抄来的，我也不知道干啥用的，不要瞎改就对了
 async function readapi(model_name,id,sign) {
+    await count(TK_SIGN.id,'requesttimes')
     let datatemp
     await $.wait(id*50)
     for (let i = 0; i < 2; i++) {
@@ -374,7 +375,6 @@ function getRandomNumberByRange(start, end) {
 
 //定义等待函数，如果当前分钟数大于58，则等待设定秒数
 async function waitfor(starttime = 59.85) {
-    await count(TK_SIGN.id,'requesttimes')
 	if (new Date().Format("mm") > 58) {
         console.log(`快到整点时间，需等待约59s开始签到........`);
 		const nowtime = new Date().Format("s.S")
