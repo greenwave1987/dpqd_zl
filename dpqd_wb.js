@@ -312,7 +312,10 @@ async function readapi(model_name,id,sign) {
                 datatemp = JSON.parse(JSON.stringify(data.data.data));
                 console.log('获取数据成功！！')
                 break
-            }else{
+            }else if(data.ret===200&data.data.err_code===2){
+		console.log(data.data.err_msg)
+		break
+	    }else{
 		console.log('获取数据失败，重试！！')
             }
         } catch (e) {
@@ -330,7 +333,10 @@ async function count(id,field) {
                 //console.log(data)
                 console.log(field+':'+data.data.after_value)
                 break
-            }else{
+            }else if(data.ret===200&data.data.err_code===2){
+		console.log(data.data.err_msg)
+		break
+	    }else{
 		console.log('获取数据失败，重试！！')
             }
         } catch (e) {
