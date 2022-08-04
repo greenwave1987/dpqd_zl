@@ -326,9 +326,9 @@ async function readapi(model_name,id,sign) {
     return(datatemp)
 }
 async function count(id,field) {
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < 5; i++) {
         try {
-            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vPyZzPUFwcC5UYWJsZS5DaGFuZ2VOdW1iZXIuaHRtbCZhcHBfa2V5PTA2RTYyOEZDMjIzMzY2RTYwQjFBNTNGMDEyQzFFNzY4Jm1vZGVsX25hbWU9VE9LRU4mY2hhbmdlX3ZhbHVlPTE=', 'base64').toString()}&id=${id}&change_field=${field}`)
+            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vPyZzPUFwcC5UYWJsZS5DaGFuZ2VOdW1iZXIuaHRtbCZhcHBfa2V5PTA2RTYyOEZDMjIzMzY2RTYwQjFBNTNGMDEyQzFFNzY4Jm1vZGVsX25hbWU9c3RhdGlzdGljcyZjaGFuZ2VfdmFsdWU9MQ==', 'base64').toString()}&id=${id}&change_field=${field}`)
             if (data.ret===200&data.data.err_code===0) {
                 //console.log(data)
                 console.log(field+':'+data.data.after_value)
