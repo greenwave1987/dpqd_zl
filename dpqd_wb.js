@@ -222,7 +222,7 @@ async function getvender(Id) {
             msgtemp += 'IP黑名单;'
         }
     } catch (e) {
-        console.log('获取数据失败！！')
+        console.log('打开首页失败！！')
     }  
 }
 //零点之后店铺签到
@@ -316,10 +316,10 @@ async function readapi(model_name,id,sign) {
 		console.log(data.data.err_msg)
 		break
 	    }else{
-		console.log('获取数据失败，重试！！')
+		console.log('获取签到数据失败，重试！！')
             }
         } catch (e) {
-            console.log('获取数据失败！！')
+            console.log('获取签到数据失败！！')
             await $.wait(getRandomNumberByRange(1000, 4000))
         }
     }
