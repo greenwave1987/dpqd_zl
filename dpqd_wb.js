@@ -1,7 +1,7 @@
 /**
  * cron: 59 20,23 * * *
  * 定时不要增加，单日请求次数用完你就获取不到数据了。青龙配置文件随机延迟取消即RandomDelay=""。
- * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。跑几个号就几个号给我助力。
+ * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。
  * 默认不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，能不能签到豆查询就好了，签到通知与否没关系。
  * 环境变量名称：TK_SIGN，环境变量值：{"id":*,"sign":"*******************"}
  * 用上面的环境变量报读取出错则拆分为TK_SIGN_ID和TK_SIGN_SIGN两个变量，对应上面｛｝里的两个值，若不报错则忽略此行。
@@ -18,7 +18,7 @@ if (!TK_SIGN) {
 	console.log('联系@dpqd_boss获取TK_SIGN.')
 	return
 }
-const $ = new Env('店铺签到(含加密挖宝助力）');
+const $ = new Env('店铺签到（自动更新）');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const axios = require('axios')
 const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
