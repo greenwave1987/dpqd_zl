@@ -159,7 +159,7 @@ async function dpqd1(){
     getUB()
     logtemp.push(token[j].shopName+`:`)
     message +=token[j].shopName+`:`
-    await getvender(token[j].shopId)
+    //await getvender(token[j].shopId)
     await signCollect(token[j].token,token[j].activity)
     await taskUrl(token[j].token,token[j].vender,token[j].activity)
     console.log(logtemp.join('→') )
