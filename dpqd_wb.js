@@ -35,6 +35,7 @@ let notify_dpqd = false
 let emergency=[]
 let apidata
 let control
+let requesttimes=0
 if (process.env.NOTIFY_DPQD){notify_dpqd = process.env.NOTIFY_DPQD} //凌晨签到是否通知，变量设置true则通知，默认不通知，估计影响签到网速，未验证。22点签到通知结果。
 //时间格式
 Date.prototype.Format = function (fmt) { //author: meizz
@@ -78,7 +79,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
             console.log(`即将零点，执行等待计时`)
             await waitfor()
             await firststep();
-            await count(TK_SIGN.id,'requesttimes')
+            await count(TK_SIGN.id,'requesttimes',requesttimes)
         }
 //其他时段签到                  
     }else{
@@ -116,6 +117,7 @@ async function firststep(){
             console.log(`\n开始【账号${index + 1}】${UserName}\n`)
             message +=`\n开始【账号${index + 1}】${UserName}\n`
             await dpqd()
+            requesttimes++
             //await $.wait(100)
         } catch (e) {
             console.log('error', e)
@@ -327,10 +329,10 @@ async function readapi(model_name,id,sign) {
     }
     return(datatemp)
 }
-async function count(id,field) {
+async function count(id,field,number) {
     for (let i = 0; i < 5; i++) {
         try {
-            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vPyZzPUFwcC5UYWJsZS5DaGFuZ2VOdW1iZXIuaHRtbCZhcHBfa2V5PTA2RTYyOEZDMjIzMzY2RTYwQjFBNTNGMDEyQzFFNzY4Jm1vZGVsX25hbWU9c3RhdGlzdGljcyZjaGFuZ2VfdmFsdWU9MQ==', 'base64').toString()}&id=${id}&change_field=${field}`)
+            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vPyZzPUFwcC5UYWJsZS5DaGFuZ2VOdW1iZXIuaHRtbCZhcHBfa2V5PTA2RTYyOEZDMjIzMzY2RTYwQjFBNTNGMDEyQzFFNzY4Jm1vZGVsX25hbWU9c3RhdGlzdGljcyZjaGFuZ2VfdmFsdWU9', 'base64').toString()}${number}&id=${id}&change_field=${field}`)
             if (data.ret===200&data.data.err_code===0) {
                 //console.log(data)
                 console.log(field+':'+data.data.after_value)
