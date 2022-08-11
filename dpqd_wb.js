@@ -78,6 +78,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
             console.log(`即将零点，执行等待计时`)
             await waitfor()
             await firststep();
+            await count(TK_SIGN.id,'requesttimes')
         }
 //其他时段签到                  
     }else{
@@ -302,7 +303,7 @@ function taskUrl(token,venderId,activityId) {
 
 // 以下都是抄来的，我也不知道干啥用的，不要瞎改就对了
 async function readapi(model_name,id,sign) {
-    await count(TK_SIGN.id,'requesttimes')
+
     let datatemp
     await $.wait(id*50)
     for (let i = 0; i < 2; i++) {
