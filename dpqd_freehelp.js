@@ -16,7 +16,7 @@ if (!TK_SIGN) {
 }
 let nolantoken
 if (process.env.TK_nolan_token) {
-    nolantoken = JSON.parse(process.env.TK_nolan_token)
+    nolantoken = process.env.TK_nolan_token
 }
 if (!nolantoken) {
     console.log(' 去https://t.me/NolanNarkbot 中获取的token,设置变量export TK_nolan_token=""')
