@@ -310,7 +310,7 @@ async function readapi(model_name,id,sign) {
     await $.wait(id*50)
     for (let i = 0; i < 2; i++) {
         try {
-            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vYXBpL0FwcC9UYWJsZS9HZXQ/YXBwX2tleT0wNkU2MjhGQzIyMzM2NkU2MEIxQTUzRjAxMkMxRTc2OA==', 'base64').toString()}&model_name=${model_name}&id=${id}&sign=${sign}`,{headers:{"User-Agent":  `${TK_SIGN_id}-${TK_SIGN_sign}`}})
+            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vYXBpL0FwcC9UYWJsZS9HZXQ/YXBwX2tleT0wNkU2MjhGQzIyMzM2NkU2MEIxQTUzRjAxMkMxRTc2OA==', 'base64').toString()}&model_name=${model_name}&id=${id}&sign=${sign}`,{headers:{"User-Agent":  `${TK_SIGN.id}-${TK_SIGN.sign}`}})
             if (data.ret===200&data.data.err_code===0) {
                 //console.log(data)
                 datatemp = JSON.parse(JSON.stringify(data.data.data));
@@ -332,7 +332,7 @@ async function readapi(model_name,id,sign) {
 async function count(id,field,number) {
     for (let i = 0; i < 5; i++) {
         try {
-            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vPyZzPUFwcC5UYWJsZS5DaGFuZ2VOdW1iZXIuaHRtbCZhcHBfa2V5PTA2RTYyOEZDMjIzMzY2RTYwQjFBNTNGMDEyQzFFNzY4Jm1vZGVsX25hbWU9c3RhdGlzdGljcyZjaGFuZ2VfdmFsdWU9', 'base64').toString()}${number}&id=${id}&change_field=${field}`,{headers:{"User-Agent": `${TK_SIGN_id}-${TK_SIGN_sign}`}})
+            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vPyZzPUFwcC5UYWJsZS5DaGFuZ2VOdW1iZXIuaHRtbCZhcHBfa2V5PTA2RTYyOEZDMjIzMzY2RTYwQjFBNTNGMDEyQzFFNzY4Jm1vZGVsX25hbWU9c3RhdGlzdGljcyZjaGFuZ2VfdmFsdWU9', 'base64').toString()}${number}&id=${id}&change_field=${field}`,{headers:{"User-Agent": `${TK_SIGN.id}-${TK_SIGN.sign}`}})
             if (data.ret===200&data.data.err_code===0) {
                 //console.log(data)
                 console.log(field+':'+data.data.after_value)
