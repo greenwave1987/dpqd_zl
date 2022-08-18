@@ -294,7 +294,7 @@ function taskUrl(token,venderId,activityId) {
           data = JSON.parse(/{(.*)}/g.exec(data)[0])
           if(data.code===200){
                 logtemp.push('第'+data.data.days+'天。')
-                msgtemp +=`第`+data.data.days+`天。`    
+                message +=`第`+data.data.days+`天。`    
             }
         }
       } catch (e) {
