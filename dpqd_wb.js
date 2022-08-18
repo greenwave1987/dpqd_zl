@@ -292,8 +292,10 @@ function taskUrl(token,venderId,activityId) {
         } else {
           //console.log(data)
           data = JSON.parse(/{(.*)}/g.exec(data)[0])
-          logtemp.push('第'+data.data.days+'天。')
-          message +=`第`+data.data.days+`天。\n`
+          if(data.code===200){
+                logtemp.push('第'+data.data.days+'天。')
+                msgtemp +=`第`+data.data.days+`天。`    
+            }
         }
       } catch (e) {
         $.logErr(e, resp);
