@@ -1,3 +1,4 @@
+console.log('当前版本号20220819！')
 /**
  * cron: 59 20,23 * * *
  * 定时不要增加，单日请求次数用完你就获取不到数据了。青龙配置文件随机延迟取消即RandomDelay=""。
@@ -6,7 +7,7 @@
  * 环境变量名称：TK_SIGN，环境变量值：{"id":*,"sign":"*************************"}
  * 用上面的环境变量报读取出错则拆分为TK_SIGN_ID和TK_SIGN_SIGN两个变量，对应上面｛｝里的两个值，若不报错则忽略此行。
 */
-console.log('当前版本号20220818！')
+
 let TK_SIGN
 if (process.env.TK_SIGN) {
 	TK_SIGN = JSON.parse(process.env.TK_SIGN)
