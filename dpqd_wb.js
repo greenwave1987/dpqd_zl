@@ -111,6 +111,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
 //零点店铺签到
 async function firststep(){
     //按用户顺序签到
+    requesttimes++
     for (let [index, value] of cookiesArr.entries()) {
         try {
             cookie = value
@@ -118,7 +119,6 @@ async function firststep(){
             console.log(`\n开始【账号${index + 1}】${UserName}\n`)
             message +=`\n开始【账号${index + 1}】${UserName}\n`
             await dpqd()
-            requesttimes++
             //await $.wait(100)
         } catch (e) {
             console.log('error', e)
