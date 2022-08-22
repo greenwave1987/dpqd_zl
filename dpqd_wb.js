@@ -1,10 +1,9 @@
-console.log('当前版本号20220819！')
 /**
  * cron: 59 20,23 * * *
  * 定时不要增加，单日请求次数用完你就获取不到数据了。青龙配置文件随机延迟取消即RandomDelay=""。
  * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。
  * 默认不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，能不能签到豆查询就好了，签到通知与否没关系。
- * 环境变量名称：TK_SIGN，环境变量值：{"id":*,"sign":"*************************"}
+ * 环境变量名称：TK_SIGN，环境变量值：{"id":*,"sign":"***********************"}
  * 用上面的环境变量报读取出错则拆分为TK_SIGN_ID和TK_SIGN_SIGN两个变量，对应上面｛｝里的两个值，若不报错则忽略此行。
 */
 
@@ -24,6 +23,8 @@ const $ = new Env('店铺签到（自动更新）');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const axios = require('axios')
 const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
+const fs=require('fs');
+console.log('当前版本号',Math.trunc(fs.statSync(__dirname).mtimeMs))
 
 let nowHours = new Date().getHours()
 let nowMinutes = new Date().getMinutes()
@@ -154,6 +155,7 @@ async function dpqd(){
     getUB()
     await signCollectGift(token[j].token,token[j].shopName,token[j].activity)
     await $.wait(500)
+    if(j===3){await $.wait(30000)}
   }
 }
 //零点之后签到
@@ -200,9 +202,12 @@ function signCollectGift(token,shopname,activity) {
           if (data.success) {
                 console.log( new Date().Format("hh:mm:ss.S")+`——√ ${shopname}`);
                 message += `√ ` + shopname + `签到成功！\n`
-            } else {
+            } else if(data.msg){
                 console.log(new Date().Format("hh:mm:ss.S")+`——× ${shopname} `, cutlog(data.msg));
                 message += `× ` + shopname+cutlog(data.msg) + `\n`
+            }else {
+                console.log(new Date().Format("hh:mm:ss.S")+`——🚫 ${shopname} `, '京东限制，少跑俩号吧！');
+                message += `🚫 ` + shopname+'京东限制，少跑俩号吧！\n'
             }
         }
       } catch (e) {
