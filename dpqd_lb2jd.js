@@ -19,7 +19,7 @@ if (!TK_SIGN) {
 	return
 }
 if (!process.env.TK_SIGN_exchange||process.env.TK_SIGN_exchange=='') {
-	console.log('未设置兑换启动变量，终止！')
+	console.log('未设置兑换启动变量，终止！，增加变量TK_SIGN_exchange为任意值即可')
 	return
 }
 
