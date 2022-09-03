@@ -206,7 +206,8 @@ function signCollectGift(token,shopname,activity) {
                 console.log(new Date().Format("hh:mm:ss.S")+`——× ${shopname} `, cutlog(data.msg));
                 message += `× ` + shopname+cutlog(data.msg) + `\n`
             }else {
-                console.log(new Date().Format("hh:mm:ss.S")+`——🚫 ${shopname} `, '京东限制，少跑俩号吧！');
+                console.log(new Date().Format("hh:mm:ss.S")+`——🚫 ${shopname} `, '京东限制，少跑俩号吧！想看京东返回内容删掉下一行最前面的注释符');
+		//console.log(data);
                 message += `🚫 ` + shopname+'京东限制，少跑俩号吧！\n'
             }
         }
