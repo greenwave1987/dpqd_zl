@@ -1,5 +1,6 @@
 /**
  * cron: 59 20,23 * * *
+ * 增加变量TK_SIGN_WAIT，控制零点店铺签到间隔，单位是秒，不是毫秒。默认是1s。
  * 定时不要增加，单日请求次数用完你就获取不到数据了。青龙配置文件随机延迟取消即RandomDelay=""。
  * 想跑几个号自己在定时任务命令后面加限制,如何限制去百度，问我也不知道，脚本内部不做限制。
  * 默认不推送通知，可以添加环境变量NOTIFY_DPQD为true开启，能不能签到豆查询就好了，签到通知与否没关系。
@@ -19,6 +20,11 @@ if (!TK_SIGN) {
 	console.log('联系@dpqd_boss获取TK_SIGN.')
 	return
 }
+let interval=1
+if (process.env.TK_SIGN_WAIT&&process.env.TK_SIGN_WAIT<5) {
+	interval = process.env.TK_SIGN_WAIT
+}
+console.log('增加变量TK_SIGN_WAIT，控制零点店铺签到间隔，单位是秒，不是毫秒。默认是1s。')
 const $ = new Env('店铺签到（自动更新）');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const axios = require('axios')
@@ -81,6 +87,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
         //执行第一步，店铺签到
             console.log(`即将零点，执行等待计时`)
             await waitfor()
+	    console.log('零点店铺签到间隔:',interval+'秒!')
             await firststep();
             await count(TK_SIGN.id,'requesttimes',requesttimes)
         }
@@ -154,8 +161,8 @@ async function dpqd(){
     }
     getUB()
     await signCollectGift(token[j].token,token[j].shopName,token[j].activity)
-    await $.wait(500)
-    if(j===3){await $.wait(30000)}
+    await $.wait(interval*1000)
+    //if(j===3){await $.wait(30000)}
   }
 }
 //零点之后签到
