@@ -327,7 +327,7 @@ async function readapi(model_name,id,sign) {
     await $.wait(id*50)
     for (let i = 0; i < 2; i++) {
         try {
-            let {data} = await axios.get(`${new Buffer.from('aHR0cHM6Ly9oZDIxNS5hcGkueWVzYXBpLmNuLz9zPUFwcC5UYWJsZS5HZXQuaHRtbCZhcHBfa2V5PTA2RTYyOEZDMjIzMzY2RTYwQjFBNTNGMDEyQzFFNzY4', 'base64').toString()}&model_name=${model_name}&id=${id}&sign=${sign}`,{headers:{"User-Agent":  `${TK_SIGN.id}/qd/${TK_SIGN.sign}`}})
+            let {data} = await axios.get(`${new Buffer.from('aHR0cDovL2hkMjE1LmFwaS55ZXNhcGkuY24vYXBpL0FwcC9UYWJsZS9HZXQ/YXBwX2tleT0wNkU2MjhGQzIyMzM2NkU2MEIxQTUzRjAxMkMxRTc2OA==', 'base64').toString()}&model_name=${model_name}&id=${id}&sign=${sign}`,{headers:{"User-Agent":  `${TK_SIGN.id}/qd/${TK_SIGN.sign}`}})
             if (data.ret===200&data.data.err_code===0) {
                 //console.log(data)
                 datatemp = JSON.parse(JSON.stringify(data.data.data));
