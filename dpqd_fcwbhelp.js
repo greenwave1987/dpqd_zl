@@ -1,10 +1,13 @@
 /**
- * cron: 0 0,1,6,7 * * *
+ * cron: 0 0,1,6 * * *
 */
+const fs=require('fs');
+console.log('当前版本号',Math.trunc(fs.statSync(__dirname).mtimeMs))
 let TK_SIGN
 if (process.env.TK_SIGN) {
     TK_SIGN = JSON.parse(process.env.TK_SIGN)
 }
+
 if (process.env.TK_SIGN_ID&&process.env.TK_SIGN_SIGN) {
     TK_SIGN = {id:process.env.TK_SIGN_ID,sign:process.env.TK_SIGN_SIGN}
 }
