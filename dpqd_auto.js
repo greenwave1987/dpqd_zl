@@ -7,7 +7,8 @@
  * 环境变量名称：TK_SIGN，环境变量值：{"id":*,"sign":"************************"}
  * 用上面的环境变量报读取出错则拆分为TK_SIGN_ID和TK_SIGN_SIGN两个变量，对应上面｛｝里的两个值，若不报错则忽略此行。
 */
-
+const fs=require('fs');
+console.log('当前版本号',Math.trunc(fs.statSync(__dirname).mtimeMs))
 let TK_SIGN
 if (process.env.TK_SIGN) {
 	TK_SIGN = JSON.parse(process.env.TK_SIGN)
@@ -28,8 +29,6 @@ console.log('增加变量TK_SIGN_WAIT，控制零点店铺签到间隔，单位�
 const $ = new Env('店铺签到（自动更新）');
 const notify = $.isNode() ? require('./sendNotify') : '';
 const JD_API_HOST = 'https://api.m.jd.com/api?appid=interCenter_shopSign';
-const fs=require('fs');
-console.log('当前版本号',Math.trunc(fs.statSync(__dirname).mtimeMs))
 
 let nowHours = new Date().getHours()
 let cookiesArr = []
@@ -86,27 +85,7 @@ Date.prototype.Format = function (fmt) { //author: meizz
 		console.log("\n店铺签到暂停！！")
 	}
 	// 获取签到token
-	//alltoken = JSON.parse(apidata.dpqd)
-    alltoken = [
-	{
-		"token": "C513D54B385E592B872FBC0F7F740F6F",
-		"vender": 10751162,
-		"activity": 11244032,
-		"shopName": "宠盟海外(专营)",
-		"shopId": 10168476,
-		"cprl": [
-			{
-				"discount": 300,
-				"level": 7,
-				"type": "红包"
-			}
-		],
-		"signday": 6,
-		"dday": 1,
-		"dou": 300,
-		"type": "红包"
-	}
-    ]
+	alltoken = JSON.parse(apidata.dpqd)
 	cookiesArr = await requireConfig()
 	// 零点签到
 	if (nowHours==23||nowHours<6){
